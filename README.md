@@ -15,6 +15,10 @@ Copy **`index.html`** and **`Outlook_Connector.bat`** into one folder on any Win
   To/subject/letter filled in). **Download letters in one go** gives one combined PDF or a ZIP.
 - To send in bulk straight from the page, double-click `Outlook_Connector.bat` instead; the app opens already connected
   to Outlook. Letters and `sent_log.csv` are saved in `output\` next to it.
+- **Install as an app** from the GitHub Pages site (https://capranavmishra26.github.io/balanceconfirmation/): click
+  **Install app on this laptop** at the top of the page (Chrome/Edge). It then opens from the Start menu in its own
+  window, works offline, and picks up new versions automatically. `manifest.webmanifest`, `sw.js` and `icon-*.png`
+  must sit next to `index.html` in the repository.
 - To change the app, edit `web/app.html` / `web/connector.ps1` and run `powershell -ExecutionPolicy Bypass -File web\build.ps1`.
 
 ## Requirements

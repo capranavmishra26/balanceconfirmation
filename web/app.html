@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vendor Balance Confirmation</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#1f5fbf">
 <style>
 :root {
   --bg: #f4f5f7; --card: #ffffff; --text: #1d2330; --muted: #5d6676; --line: #dde1e7;
@@ -26,6 +30,7 @@
 body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 "Segoe UI", system-ui, -apple-system, Arial, sans-serif; }
 .wrap { max-width: 1280px; margin: 0 auto; padding: 20px 16px 60px; }
 header h1 { margin: 0; font-size: 22px; }
+header .top { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
 header p { margin: 4px 0 18px; color: var(--muted); }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px; margin-bottom: 16px; }
 .card h2 { margin: 0 0 14px; font-size: 16px; display: flex; align-items: center; gap: 8px; }
@@ -110,7 +115,11 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
 <body>
 <div class="wrap">
   <header>
-    <h1>📨 Vendor Balance Confirmation</h1>
+    <div class="top">
+      <h1>📨 Vendor Balance Confirmation</h1>
+      <button class="btn primary hidden" id="installBtn" type="button">⬇ Install app on this laptop</button>
+    </div>
+    <div class="alert info hidden" id="installHelp"></div>
     <p>Upload SAP dumps → review net balances → create PDF letters and send them through Outlook. Runs fully offline in your browser; nothing is uploaded anywhere.</p>
   </header>
 
@@ -986,6 +995,30 @@ function savePrefs() { lsSet(LS_PREFS, {asAt: $("#asAt").value, fromAcc: $("#fro
   if (prefs.delay) $("#delay").value = prefs.delay;
   if (!window.XLSX || !window.jspdf || !window.JSZip) showMsg("A built-in library failed to load. Please use the full index.html file.");
   renderSettings(); refreshMasterNote(); renderConn(); checkConnector();
+})();
+
+// ------------------------------------------------------------------ install as an app (only when served over https, e.g. GitHub Pages)
+(function setupInstall() {
+  const btn = $("#installBtn"), help = $("#installHelp");
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  if (location.protocol !== "https:" || standalone || !("serviceWorker" in navigator)) return;
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+  let deferred = null;
+  window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferred = e; });
+  btn.classList.remove("hidden");
+  btn.addEventListener("click", async () => {
+    if (deferred) {
+      deferred.prompt();
+      const { outcome } = await deferred.userChoice;
+      deferred = null;
+      if (outcome === "accepted") btn.classList.add("hidden");
+      return;
+    }
+    // no prompt available (already installed, or browser without one-click install)
+    help.innerHTML = "To install: in <b>Chrome</b> click the install icon (⊕) at the right end of the address bar; in <b>Edge</b> open the <b>…</b> menu → <b>Apps</b> → <b>Install this site as an app</b>. If it's already installed, open it from the Start menu.";
+    help.classList.toggle("hidden");
+  });
+  window.addEventListener("appinstalled", () => { btn.classList.add("hidden"); help.classList.add("hidden"); });
 })();
 </script>
 </body>
