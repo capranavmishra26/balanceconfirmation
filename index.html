@@ -188,11 +188,11 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
       <div class="sect">Email this vendor</div>
       <div class="share">
         <button class="share-card" id="shareFile" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5 12 13l8.5-6.5"/></svg>
-          <span><b>Letter + text</b><small>Attach PDF letter</small></span></button>
+          <span><b>Letter + text</b><small>Windows share menu (not classic Outlook)</small></span></button>
         <button class="share-card" id="shareText" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5 12 13l8.5-6.5"/></svg>
           <span><b>Text only</b><small>Opens mail app</small></span></button>
         <button class="share-card" id="shareEml" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5 12 13l8.5-6.5"/></svg>
-          <span><b>Outlook draft</b><small>To, subject &amp; letter filled in</small></span></button>
+          <span><b>Classic Outlook</b><small>Draft with To, subject &amp; PDF attached</small></span></button>
         <button class="share-card" id="shareNew" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5 12 13l8.5-6.5"/></svg>
           <span><b>New Outlook</b><small>Opens the mail + saves the PDF to attach</small></span></button>
       </div>
@@ -1424,7 +1424,8 @@ $("#shareEml").addEventListener("click", () => {
     "Content-Transfer-Encoding: base64", "", wrap(makeLetter(r).output("datauristring").split(",").pop()), `--${B}--`, ""
   ].filter(l => l !== null).join("\r\n");
   download(new Blob([eml], {type: "message/rfc822"}), name.replace(/\.pdf$/, ".eml"));
-  shareMsg("Downloaded an Outlook draft – open it from the browser's downloads; it opens in Outlook with the letter attached, ready to Send.");
+  shareMsg("Downloaded an Outlook draft – open it from the browser's downloads (Ctrl+J); classic Outlook opens it with the letter attached, ready to Send. " +
+    "If it opens in New Outlook or read-only: right-click the .eml file → Open with → Choose another app → Outlook (classic) → Always.");
 });
 
 $("#connBox").addEventListener("click", e => {
