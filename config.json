@@ -1,0 +1,20 @@
+{
+  "company_name": "C.P. Milk & Food Products Private Limited",
+  "addressee": "Finance & Accounts Head",
+  "address_lines": [
+    "6th Floor, Iridium Shalimar Corporate Park,",
+    "Vibhuti Khand, Gomti Nagar, Lucknow,",
+    "Uttar Pradesh 226010, India"
+  ],
+  "salutation": "Dear Sir/Madam,",
+  "sign_off": "Yours faithfully,",
+  "phrase_credit": "receivable from us",
+  "phrase_debit": "payable by us to you",
+  "phrase_nil": "between us",
+
+  "email_subject": "Confirmation of Outstanding Balance as at {as_at} - {vendor_name} ({vendor_code})",
+  "email_body": "<p>Dear Sir/Madam,</p><p>As part of our financial closing and reporting process, please find attached our balance confirmation letter for <b>M/s {vendor_name}</b> (Vendor Code: {vendor_code}) as at <b>{as_at}</b>.</p><p>As per our books, the balance is <b>&#8377; {amount} {nature}</b>.</p><p>Kindly verify, sign and stamp the confirmation section of the attached letter and reply to this email with the scanned copy within 7 days. If there is any difference, please share your statement of account for reconciliation.</p><p>Regards,<br>Finance &amp; Accounts Team<br>{company_name}</p>",
+  "email_nature_credit": "(Cr. - payable to you)",
+  "email_nature_debit": "(Dr. - receivable from you)",
+  "email_nature_nil": "(Nil)"
+}

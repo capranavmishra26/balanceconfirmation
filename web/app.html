@@ -1,0 +1,992 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vendor Balance Confirmation</title>
+<style>
+:root {
+  --bg: #f4f5f7; --card: #ffffff; --text: #1d2330; --muted: #5d6676; --line: #dde1e7;
+  --accent: #1f5fbf; --accent-soft: #e6eefb; --ok: #1b7f4b; --warn: #a15c00; --warn-soft: #fff4e2;
+  --bad: #b3261e; --bad-soft: #fdecea; --input: #ffffff; --row-alt: #fafbfc;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14171c; --card: #1d2128; --text: #e6e9ee; --muted: #9aa3b2; --line: #2e343e;
+    --accent: #6ea2f0; --accent-soft: #1f2d44; --ok: #5cc28a; --warn: #f0b45a; --warn-soft: #3a2e1a;
+    --bad: #f28b82; --bad-soft: #3b2222; --input: #161a20; --row-alt: #20252d;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14171c; --card: #1d2128; --text: #e6e9ee; --muted: #9aa3b2; --line: #2e343e;
+  --accent: #6ea2f0; --accent-soft: #1f2d44; --ok: #5cc28a; --warn: #f0b45a; --warn-soft: #3a2e1a;
+  --bad: #f28b82; --bad-soft: #3b2222; --input: #161a20; --row-alt: #20252d;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 "Segoe UI", system-ui, -apple-system, Arial, sans-serif; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 20px 16px 60px; }
+header h1 { margin: 0; font-size: 22px; }
+header p { margin: 4px 0 18px; color: var(--muted); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px; margin-bottom: 16px; }
+.card h2 { margin: 0 0 14px; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+.step { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 13px; }
+.grid { display: grid; gap: 14px; }
+.g3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.g4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+label.f { display: flex; flex-direction: column; gap: 4px; font-weight: 600; font-size: 13px; }
+label.f small { font-weight: 400; color: var(--muted); }
+input[type=text], input[type=email], input[type=number], input[type=date], input[type=search], select, textarea {
+  font: inherit; color: var(--text); background: var(--input); border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; width: 100%;
+}
+textarea { resize: vertical; font-family: Consolas, monospace; font-size: 12.5px; }
+.drop { border: 1.5px dashed var(--line); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+.drop.done { border-color: var(--ok); border-style: solid; }
+.drop .name { font-size: 12.5px; color: var(--muted); word-break: break-all; }
+.drop.done .name { color: var(--ok); }
+input[type=file] { font: inherit; font-size: 12.5px; max-width: 100%; color: var(--muted); }
+.btn { font: inherit; font-weight: 600; border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 6px; padding: 8px 14px; cursor: pointer; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.link { border: 0; background: none; color: var(--accent); padding: 0; font-weight: 600; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.metric { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.metric .k { font-size: 12px; color: var(--muted); }
+.metric .v { font-size: 19px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 999px; padding: 5px 12px; cursor: pointer; font: inherit; font-size: 13px; }
+.chip.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.tablewrap { overflow: auto; max-height: 480px; border: 1px solid var(--line); border-radius: 8px; margin-top: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+th { position: sticky; top: 0; background: var(--card); z-index: 1; font-size: 12px; color: var(--muted); }
+tbody tr:nth-child(even) { background: var(--row-alt); }
+td.num { text-align: right; font-variant-numeric: tabular-nums; }
+td.name { white-space: normal; min-width: 220px; }
+td input[type=text] { padding: 4px 6px; min-width: 200px; font-size: 12.5px; }
+td input.bad { border-color: var(--bad); background: var(--bad-soft); }
+.dr { color: var(--ok); } .cr { color: var(--accent); }
+.note { font-size: 12.5px; color: var(--muted); margin: 8px 0 0; }
+.alert { border-radius: 8px; padding: 10px 12px; margin: 10px 0 0; font-size: 13px; }
+.alert.warn { background: var(--warn-soft); color: var(--warn); }
+.alert.err { background: var(--bad-soft); color: var(--bad); }
+.alert.info { background: var(--accent-soft); color: var(--accent); }
+.preview { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px; margin-top: 12px; }
+.mailmeta { font-size: 13px; border: 1px solid var(--line); border-bottom: 0; border-radius: 8px 8px 0 0; padding: 10px 12px; }
+.mailmeta div { margin: 2px 0; word-break: break-word; }
+iframe.body { width: 100%; height: 380px; border: 1px solid var(--line); border-radius: 0 0 8px 8px; background: #fff; }
+iframe.pdf { width: 100%; height: 520px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+details { margin-top: 14px; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+details summary { cursor: pointer; font-weight: 600; }
+.settings { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-top: 12px; }
+.settings .wide { grid-column: 1 / -1; }
+.progress { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; margin-top: 10px; display: none; }
+.progress div { height: 100%; width: 0; background: var(--accent); transition: width .15s; }
+.hidden { display: none !important; }
+ol.howto { margin: 8px 0 0; padding-left: 20px; font-size: 13px; }
+ol.howto li { margin: 3px 0; }
+.conn { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; border-radius: 8px; padding: 10px 12px; font-size: 13px; }
+.conn.on { background: color-mix(in srgb, var(--ok) 14%, transparent); }
+.conn.off { background: var(--warn-soft); }
+.conn .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--warn); flex: none; }
+.conn.on .dot { background: var(--ok); }
+.conn > span:not(.dot) { flex: 1 1 320px; }
+.conn input { width: 130px; text-transform: uppercase; letter-spacing: 1px; }
+.emailbox { margin-top: 16px; }
+.sect { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.share { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.share-card { display: flex; align-items: center; gap: 12px; text-align: left; font: inherit; color: var(--text); background: var(--card);
+  border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; cursor: pointer; }
+.share-card:hover { border-color: var(--accent); background: var(--accent-soft); }
+.share-card svg { width: 26px; height: 26px; flex: none; fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-linejoin: round; }
+.share-card b { display: block; font-size: 15px; }
+.share-card small { color: var(--muted); font-size: 13px; }
+.st-ok { color: var(--ok); font-weight: 600; } .st-bad { color: var(--bad); font-weight: 600; }
+code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; font-size: 12.5px; }
+@media (max-width: 800px) { .preview { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📨 Vendor Balance Confirmation</h1>
+    <p>Upload SAP dumps → review net balances → create PDF letters and send them through Outlook. Runs fully offline in your browser; nothing is uploaded anywhere.</p>
+  </header>
+
+  <!-- STEP 1 -->
+  <section class="card">
+    <h2><span class="step">1</span> Upload files &amp; period</h2>
+    <div class="grid g3">
+      <div class="drop" id="dropAdv"><label class="f">Advance to Vendor open items (SAP)<small>Excel, header in row 1</small></label>
+        <input type="file" id="fileAdv" accept=".xlsx,.xls"><span class="name"></span></div>
+      <div class="drop" id="dropCred"><label class="f">Creditor open items (SAP)<small>Excel, header in row 1</small></label>
+        <input type="file" id="fileCred" accept=".xlsx,.xls"><span class="name"></span></div>
+      <div class="drop" id="dropMaster"><label class="f">Vendor master (optional)<small>Columns: Vendor Code, Email, CC</small></label>
+        <input type="file" id="fileMaster" accept=".xlsx,.xls,.csv"><span class="name"></span>
+        <button class="btn link hidden" id="clearMaster" type="button">Forget remembered vendor master</button></div>
+    </div>
+    <div class="grid g4" style="margin-top:14px">
+      <label class="f">Balance as at<input type="date" id="asAt"></label>
+      <label class="f">Letter date<input type="date" id="letterDate"></label>
+      <label class="f">Minimum balance (absolute, ₹)<input type="number" id="minBal" min="0" step="100" value="1"></label>
+    </div>
+    <div id="loadMsg"></div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="card hidden" id="step2">
+    <h2><span class="step">2</span> Review balances</h2>
+    <div class="metrics" id="metrics"></div>
+    <div class="row" style="justify-content:space-between">
+      <div class="chips" id="filters"></div>
+      <div class="row">
+        <input type="search" id="search" placeholder="Search code / name / email" style="width:240px">
+        <button class="btn" id="dlMaster" type="button">⬇ Vendor master template</button>
+        <button class="btn" id="dlBal" type="button">⬇ Balances (Excel)</button>
+      </div>
+    </div>
+    <div class="tablewrap"><table>
+      <thead><tr>
+        <th><input type="checkbox" id="checkAll" title="Tick / untick all rows shown"></th>
+        <th>Code</th><th>Vendor</th><th>Advance (Dr)</th><th>Creditor (Cr)</th><th>Net</th><th>Email</th><th>CC</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table></div>
+    <p class="note">Tick or untick <b>Send</b>, or type or correct an email in the table (separate multiple emails with <code>;</code>). The browser remembers email edits for next time. Dr = advance due from the vendor; Cr = payable to the vendor.</p>
+    <div id="selWarn"></div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="card hidden" id="step3">
+    <h2><span class="step">3</span> Preview</h2>
+    <label class="f" style="max-width:520px">Preview vendor<select id="pick"></select></label>
+    <div class="preview">
+      <div>
+        <div class="mailmeta" id="mailMeta"></div>
+        <iframe class="body" id="bodyFrame" sandbox title="Email body preview"></iframe>
+      </div>
+      <div>
+        <iframe class="pdf" id="pdfFrame" title="Letter preview"></iframe>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="dlOne" type="button">⬇ Download this letter (PDF)</button>
+          <button class="btn" id="openOne" type="button" title="Needs the Outlook Connector">✉ Open this mail in Outlook</button>
+        </div>
+      </div>
+    </div>
+    <div class="emailbox">
+      <div class="sect">Email this vendor</div>
+      <div class="share">
+        <button class="share-card" id="shareFile" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5 12 13l8.5-6.5"/></svg>
+          <span><b>Letter + text</b><small>Attach PDF letter</small></span></button>
+        <button class="share-card" id="shareText" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5 12 13l8.5-6.5"/></svg>
+          <span><b>Text only</b><small>Opens mail app</small></span></button>
+        <button class="share-card" id="shareEml" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5 12 13l8.5-6.5"/></svg>
+          <span><b>Outlook draft</b><small>To, subject &amp; letter filled in</small></span></button>
+      </div>
+      <p class="note" id="shareMsg">Uses the Test mode address from step 4 when it is filled in.</p>
+    </div>
+    <details>
+      <summary>Edit letter &amp; email wording</summary>
+      <p class="note">Saved in this browser. Email placeholders: <code>{vendor_name}</code> <code>{vendor_code}</code> <code>{as_at}</code> <code>{as_at_html}</code> <code>{amount}</code> <code>{nature}</code> <code>{company_name}</code></p>
+      <div class="settings" id="settings"></div>
+      <div class="row" style="margin-top:12px"><button class="btn" id="resetSettings" type="button">Reset to defaults</button></div>
+    </details>
+  </section>
+
+  <!-- DOWNLOAD LETTERS -->
+  <section class="card hidden" id="stepDl">
+    <h2>⬇ Download letters in one go</h2>
+    <div class="row">
+      <label class="f" style="min-width:300px">Which vendors<select id="dlScope"></select></label>
+      <button class="btn primary" id="dlPdf" type="button" style="align-self:flex-end">⬇ All letters – one PDF</button>
+      <button class="btn" id="dlZip" type="button" style="align-self:flex-end">⬇ All letters – ZIP (separate PDFs)</button>
+    </div>
+    <div class="progress" id="dlProg"><div></div></div>
+    <p class="note" id="dlProgText">One PDF is handy for printing; the ZIP gives one file per vendor.</p>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="card hidden" id="step4">
+    <h2><span class="step">4</span> Send through Outlook</h2>
+    <div id="connBox"></div>
+    <div class="grid g4" style="margin-top:14px">
+      <label class="f">Test mode: send ALL mails to<input type="email" id="testTo" placeholder="your.name@company.com"><small>Leave blank to send to vendors. Vendor CCs are dropped in test mode.</small></label>
+      <label class="f">Send from (Outlook account)<input type="email" id="fromAcc" list="accList" placeholder="Leave blank for default account"><datalist id="accList"></datalist></label>
+      <label class="f">Action in Outlook<select id="action">
+        <option value="Draft">Save to Drafts (review, then send)</option>
+        <option value="Send">Send immediately</option>
+        <option value="Display">Open each mail in Outlook</option></select></label>
+      <label class="f">Pause between mails (seconds)<input type="number" id="delay" min="0" step="0.5" value="1"></label>
+    </div>
+    <p id="sendSummary" style="margin:14px 0 6px;font-weight:600"></p>
+    <label class="row" style="gap:8px"><input type="checkbox" id="confirm"> <span id="confirmText"></span></label>
+    <div class="row" style="margin-top:12px">
+      <button class="btn primary" id="sendNow" type="button" disabled>📤 Send via Outlook</button>
+      <button class="btn hidden" id="stopSend" type="button">■ Stop</button>
+    </div>
+    <div class="progress" id="prog"><div></div></div>
+    <p class="note" id="progText"></p>
+    <div id="results" class="hidden">
+      <div class="row" style="justify-content:space-between;margin-top:6px"><b id="resSummary"></b><button class="btn" id="dlLog" type="button">⬇ Send log (Excel)</button></div>
+      <div class="tablewrap" style="max-height:300px"><table>
+        <thead><tr><th>#</th><th>Code</th><th>Vendor</th><th>To</th><th>Status</th><th>Error</th></tr></thead>
+        <tbody id="resBody"></tbody></table></div>
+    </div>
+    <details>
+      <summary>No connector? Create an offline mail package (ZIP) instead</summary>
+      <p class="note">The ZIP contains the letters and <b>Send_Emails.bat</b>. Extract it, double-click the .bat and type YES. It uses the Test mode / Send from / Action settings above (“Open each mail” is treated as Save to Drafts).</p>
+      <div class="row" style="margin-top:10px"><button class="btn" id="makePkg" type="button" disabled>📦 Create Outlook mail package (ZIP)</button></div>
+    </details>
+  </section>
+</div>
+
+<!--LIB:xlsx-->
+<!--LIB:jspdf-->
+<!--LIB:jszip-->
+<script>
+"use strict";
+// ------------------------------------------------------------------ defaults (from config.json)
+const DEFAULTS = {
+  company_name: "C.P. Milk & Food Products Private Limited",
+  addressee: "Finance & Accounts Head",
+  address_lines: ["6th Floor, Iridium Shalimar Corporate Park,", "Vibhuti Khand, Gomti Nagar, Lucknow,", "Uttar Pradesh 226010, India"],
+  salutation: "Dear Sir/Madam,",
+  sign_off: "Yours faithfully,",
+  phrase_credit: "receivable from us",
+  phrase_debit: "payable by us to you",
+  phrase_nil: "between us",
+  email_subject: "Confirmation of Outstanding Balance as at {as_at} - {vendor_name} ({vendor_code})",
+  email_body: "<p>Dear Sir/Madam,</p><p>As part of our financial closing and reporting process, please find attached our balance confirmation letter for <b>M/s {vendor_name}</b> (Vendor Code: {vendor_code}) as at <b>{as_at}</b>.</p><p>As per our books, the balance is <b>&#8377; {amount} {nature}</b>.</p><p>Kindly verify, sign and stamp the confirmation section of the attached letter and reply to this email with the scanned copy within 7 days. If there is any difference, please share your statement of account for reconciliation.</p><p>Regards,<br>Finance &amp; Accounts Team<br>{company_name}</p>",
+  email_nature_credit: "(Cr. - payable to you)",
+  email_nature_debit: "(Dr. - receivable from you)",
+  email_nature_nil: "(Nil)"
+};
+const SETTING_FIELDS = [
+  ["company_name", "Company name"], ["addressee", "Addressee (reply section)"],
+  ["address_lines", "Company address (one line per row)", "area"],
+  ["salutation", "Salutation"], ["sign_off", "Sign-off"],
+  ["phrase_credit", "Letter phrase - credit balance"], ["phrase_debit", "Letter phrase - debit balance"], ["phrase_nil", "Letter phrase - nil"],
+  ["email_nature_credit", "Email nature - credit"], ["email_nature_debit", "Email nature - debit"], ["email_nature_nil", "Email nature - nil"],
+  ["email_subject", "Email subject", "wide"], ["email_body", "Email body (HTML)", "area wide"]
+];
+const COL_VENDOR = "Vendor", COL_NAME = "Vendor Account: Name 1", COL_AMOUNT = "Company Code Currency Value";
+const LS_SETTINGS = "bc_settings_v1", LS_MASTER = "bc_master_v1", LS_PREFS = "bc_prefs_v1";
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+// ------------------------------------------------------------------ helpers
+const $ = s => document.querySelector(s);
+function lsGet(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const round2 = x => Math.sign(x) * Math.round((Math.abs(x) + Number.EPSILON) * 100) / 100;
+const pad = n => String(n).padStart(2, "0");
+const ordinal = d => (d % 100 >= 11 && d % 100 <= 13) ? "th" : ({1: "st", 2: "nd", 3: "rd"}[d % 10] || "th");
+const longDate = d => `${d.getDate()}${ordinal(d.getDate())} ${MONTHS[d.getMonth()]}, ${d.getFullYear()}`;
+const longDateHtml = d => `${d.getDate()}<sup>${ordinal(d.getDate())}</sup> ${MONTHS[d.getMonth()]}, ${d.getFullYear()}`;
+const dmy = d => `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()}`;
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+function parseDate(v) { const [y, m, d] = v.split("-").map(Number); return new Date(y, m - 1, d); }
+function inr(a) {
+  let [w, dec] = Math.abs(round2(a)).toFixed(2).split(".");
+  if (w.length > 3) {
+    let head = w.slice(0, -3); const tail = w.slice(-3), g = [];
+    while (head.length > 2) { g.unshift(head.slice(-2)); head = head.slice(0, -2); }
+    if (head) g.unshift(head);
+    w = [...g, tail].join(",");
+  }
+  return w + "." + dec;
+}
+const signed = a => (a < 0 ? "-" : "") + inr(a);
+const drcr = a => a > 0 ? `<span class="dr">${inr(a)} Dr</span>` : a < 0 ? `<span class="cr">${inr(a)} Cr</span>` : "Nil";
+function cleanCode(v) { const s = String(v ?? "").trim().replace(/\.0$/, ""); return (s === "nan" || s === "None") ? "" : s; }
+function toNum(v) {
+  if (typeof v === "number") return v;
+  let s = String(v ?? "").replace(/,/g, "").trim(); if (!s) return 0;
+  let neg = false; if (s.endsWith("-")) { neg = true; s = s.slice(0, -1); }   // SAP trailing minus
+  const n = parseFloat(s); return isNaN(n) ? 0 : (neg ? -n : n);
+}
+function normEmails(v) { return String(v ?? "").split(/[;,\s]+/).map(s => s.trim()).filter(Boolean).join("; "); }
+function validEmails(s) {
+  const parts = String(s || "").split(";").map(p => p.trim()).filter(Boolean);
+  return parts.length > 0 && parts.every(p => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(p));
+}
+const safeName = s => (String(s).replace(/[^A-Za-z0-9._ -]+/g, "").trim().slice(0, 60) || "vendor");
+function fill(tpl, vals) { return tpl.replace(/\{(\w+)\}/g, (m, k) => (k in vals ? vals[k] : m)); }
+function download(blob, name) {
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+function writeXlsx(data, name) {
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), "Sheet1"); XLSX.writeFile(wb, name);
+}
+const tick = () => new Promise(r => setTimeout(r, 0));
+
+// ------------------------------------------------------------------ state
+let cfg = Object.assign({}, DEFAULTS, lsGet(LS_SETTINGS) || {});
+let master = lsGet(LS_MASTER);          // { code: {email, cc} }
+let adv = null, cred = null;            // parsed dump lines
+let rows = [];                          // one per vendor
+let filter = "All";
+
+// ------------------------------------------------------------------ reading Excel
+async function readRows(file) {
+  const wb = XLSX.read(await file.arrayBuffer(), {type: "array"});
+  const raw = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval: "", raw: true});
+  return raw.map(r => { const o = {}; for (const k in r) o[String(k).trim()] = r[k]; return o; });
+}
+async function readDump(file) {
+  const data = await readRows(file);
+  const cols = data.length ? Object.keys(data[0]) : [];
+  const missing = [COL_VENDOR, COL_NAME, COL_AMOUNT].filter(c => !cols.includes(c));
+  if (missing.length) throw new Error(`${file.name}: column(s) not found: ${missing.join(", ")}`);
+  return data.map(r => ({code: cleanCode(r[COL_VENDOR]), name: String(r[COL_NAME] ?? "").trim(), amt: toNum(r[COL_AMOUNT])}))
+             .filter(r => r.code !== "");      // drops the grand-total row
+}
+function findCol(cols, keys, exclude = []) {
+  return cols.find(c => { const l = c.toLowerCase(); return keys.some(k => l.includes(k)) && !exclude.some(x => l.includes(x)); });
+}
+async function readMaster(file) {
+  const data = await readRows(file);
+  const cols = data.length ? Object.keys(data[0]) : [];
+  const code = findCol(cols, ["vendor code", "vendor", "code", "supplier"]);
+  const email = findCol(cols, ["email", "e-mail", "mail"], ["cc"]);
+  const cc = cols.find(c => c.toLowerCase().trim() === "cc") || findCol(cols, ["cc"], ["account", "acc "]);
+  if (!code || !email) throw new Error("Vendor master needs a 'Vendor Code' and an 'Email' column.");
+  const m = {};
+  for (const r of data) { const k = cleanCode(r[code]); if (k) m[k] = {email: normEmails(r[email]), cc: cc ? normEmails(r[cc]) : ""}; }
+  return m;
+}
+
+// ------------------------------------------------------------------ balances
+function buildRows() {
+  const map = new Map();
+  const get = code => { if (!map.has(code)) map.set(code, {code, nameA: "", nameC: "", advance: 0, creditor: 0}); return map.get(code); };
+  for (const r of adv) { const v = get(r.code); v.advance += r.amt; if (!v.nameA) v.nameA = r.name; }
+  for (const r of cred) { const v = get(r.code); v.creditor += r.amt; if (!v.nameC) v.nameC = r.name; }
+  rows = [...map.values()].map(v => {
+    const advance = round2(v.advance), creditor = round2(v.creditor), net = round2(advance + creditor);
+    return {code: v.code, name: v.nameC || v.nameA, advance, creditor, net, email: "", cc: "", send: false};
+  }).sort((a, b) => a.code.localeCompare(b.code, undefined, {numeric: true}));
+  applyMaster(); resetSend();
+}
+function applyMaster() {
+  if (!master) return;
+  for (const r of rows) { const m = master[r.code]; if (m) { r.email = m.email; r.cc = m.cc; } }
+}
+function minBal() { return Math.max(parseFloat($("#minBal").value) || 0, 0.01); }
+function resetSend() { const mb = minBal(); for (const r of rows) r.send = validEmails(r.email) && Math.abs(r.net) >= mb; }
+const selectedRows = () => rows.filter(r => r.send && validEmails(r.email));
+
+// ------------------------------------------------------------------ render: step 2
+const FILTERS = {
+  "All": () => true,
+  "Ticked": r => r.send,
+  "Missing email": r => !validEmails(r.email),
+  "Debit (advance)": r => r.net > 0,
+  "Credit": r => r.net < 0
+};
+function viewRows() {
+  const q = $("#search").value.trim().toLowerCase();
+  return rows.filter(FILTERS[filter]).filter(r => !q || (r.code + " " + r.name + " " + r.email + " " + r.cc).toLowerCase().includes(q));
+}
+function renderFilters() {
+  $("#filters").innerHTML = Object.keys(FILTERS).map(f =>
+    `<button class="chip${f === filter ? " on" : ""}" data-f="${esc(f)}" type="button">${esc(f)} (${rows.filter(FILTERS[f]).length.toLocaleString("en-IN")})</button>`).join("");
+}
+function renderMetrics() {
+  const tot = rows.reduce((a, r) => a + r.net, 0);
+  const uniq = arr => new Set(arr.map(r => r.code)).size;
+  const m = [
+    ["Advance lines / vendors", `${adv.length.toLocaleString("en-IN")} / ${uniq(adv).toLocaleString("en-IN")}`],
+    ["Creditor lines / vendors", `${cred.length.toLocaleString("en-IN")} / ${uniq(cred).toLocaleString("en-IN")}`],
+    ["Total vendors", rows.length.toLocaleString("en-IN")],
+    ["With valid email", rows.filter(r => validEmails(r.email)).length.toLocaleString("en-IN")],
+    ["Net balance (₹)", inr(tot) + (tot < 0 ? " Cr" : tot > 0 ? " Dr" : "")]
+  ];
+  $("#metrics").innerHTML = m.map(([k, v]) => `<div class="metric"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+}
+function renderTable() {
+  const v = viewRows();
+  $("#tbody").innerHTML = v.map(r => {
+    const i = rows.indexOf(r);
+    return `<tr data-i="${i}">
+      <td><input type="checkbox" data-k="send"${r.send ? " checked" : ""}></td>
+      <td>${esc(r.code)}</td><td class="name">${esc(r.name)}</td>
+      <td class="num">${signed(r.advance)}</td><td class="num">${signed(r.creditor)}</td><td class="num">${drcr(r.net)}</td>
+      <td><input type="text" data-k="email" value="${esc(r.email)}"${validEmails(r.email) ? "" : ' class="bad"'}></td>
+      <td><input type="text" data-k="cc" value="${esc(r.cc)}"></td></tr>`;
+  }).join("") || `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px">No vendors match.</td></tr>`;
+  $("#checkAll").checked = v.length > 0 && v.every(r => r.send);
+}
+function renderSelection() {
+  const sel = selectedRows(), bad = rows.filter(r => r.send && !validEmails(r.email));
+  $("#selWarn").innerHTML = bad.length ? `<div class="alert warn">${bad.length} ticked vendor(s) have no valid email and will be skipped.</div>` : "";
+  const test = $("#testTo").value.trim();
+  const mode = test ? `TEST mode → every mail goes to ${esc(test)}` : "LIVE mode → mails go to vendors";
+  $("#sendSummary").innerHTML = `${sel.length.toLocaleString("en-IN")} vendor(s) selected · ${mode}`;
+  const [label, verb] = ACTION_WORDS[$("#action").value] || ACTION_WORDS.Draft;
+  $("#confirmText").textContent = `I have reviewed the list and want to ${verb} ${sel.length} email(s).`;
+  const ready = $("#confirm").checked && sel.length > 0 && !sending;
+  $("#makePkg").disabled = !ready;
+  $("#sendNow").disabled = !(ready && conn.ok);
+  $("#sendNow").textContent = `📤 ${label} ${sel.length.toLocaleString("en-IN")} email(s) via Outlook`;
+  renderScope(); renderPick();
+}
+function renderAll() {
+  ["#step2", "#step3", "#stepDl", "#step4"].forEach(s => $(s).classList.remove("hidden"));
+  renderMetrics(); renderFilters(); renderTable(); renderSelection();
+}
+
+// ------------------------------------------------------------------ email values
+function natureText(net) { return net < 0 ? cfg.email_nature_credit : net > 0 ? cfg.email_nature_debit : cfg.email_nature_nil; }
+function mailValues(r, html) {
+  const asAt = parseDate($("#asAt").value), e = html ? esc : (s => s);
+  return {
+    vendor_code: e(r.code), vendor_name: e(r.name), as_at: longDate(asAt), as_at_html: longDateHtml(asAt),
+    amount: inr(r.net), nature: e(natureText(r.net)), company_name: e(cfg.company_name)
+  };
+}
+function mailFor(r) {
+  const test = $("#testTo").value.trim();
+  return {
+    to: test || r.email, cc: test ? "" : r.cc,
+    subject: fill(cfg.email_subject, mailValues(r, false)),
+    body: fill(cfg.email_body, mailValues(r, true))
+  };
+}
+
+// ------------------------------------------------------------------ PDF letter (jsPDF)
+const MM = 72 / 25.4;
+function setStyle(doc, pc, fs) { doc.setFont("helvetica", pc.b ? "bold" : "normal"); doc.setFontSize(pc.sup ? fs * 0.62 : fs); }
+// Lays out styled segments [{t, b, u, sup}] with word wrap; returns the new y.
+function drawRich(doc, segs, x0, y, width, fs, lead, justify) {
+  const words = []; let cur = [];
+  for (const s of segs) for (const p of String(s.t).split(/( +)/)) {
+    if (!p) continue;
+    if (/^ +$/.test(p)) { if (cur.length) { words.push(cur); cur = []; } continue; }
+    cur.push({...s, t: p});
+  }
+  if (cur.length) words.push(cur);
+  for (const w of words) { for (const pc of w) { setStyle(doc, pc, fs); pc.w = doc.getTextWidth(pc.t); } w.width = w.reduce((a, p) => a + p.w, 0); }
+  doc.setFont("helvetica", "normal"); doc.setFontSize(fs); const sp = doc.getTextWidth(" ");
+  const lines = []; let line = [], lw = 0;
+  for (const w of words) {
+    const add = line.length ? sp + w.width : w.width;
+    if (line.length && lw + add > width) { lines.push(line); line = [w]; lw = w.width; } else { line.push(w); lw += add; }
+  }
+  if (line.length) lines.push(line);
+  lines.forEach((ln, i) => {
+    const base = y + fs, natural = ln.reduce((a, w) => a + w.width, 0) + sp * (ln.length - 1);
+    const gap = (justify && i < lines.length - 1 && ln.length > 1) ? sp + (width - natural) / (ln.length - 1) : sp;
+    let x = x0;
+    ln.forEach((w, j) => {
+      for (const pc of w) {
+        setStyle(doc, pc, fs);
+        // real space after the word keeps copied / searched text readable
+        const t = (pc === w[w.length - 1] && j < ln.length - 1) ? pc.t + " " : pc.t;
+        doc.text(t, x, pc.sup ? base - fs * 0.38 : base);
+        if (pc.u) { doc.setLineWidth(0.6); doc.line(x, base + 1.6, x + pc.w, base + 1.6); }
+        x += pc.w;
+      }
+      if (j < ln.length - 1) {
+        if (w[w.length - 1].u && ln[j + 1][0].u) { doc.setLineWidth(0.6); doc.line(x, base + 1.6, x + gap, base + 1.6); }
+        x += gap;
+      }
+    });
+    y += lead;
+  });
+  return y;
+}
+function dateSegs(d, st = {}) {
+  return [{...st, t: String(d.getDate())}, {...st, t: ordinal(d.getDate()), sup: true}, {...st, t: ` ${MONTHS[d.getMonth()]}, ${d.getFullYear()}`}];
+}
+function balancePhrase(net) { return net < 0 ? cfg.phrase_credit : net > 0 ? cfg.phrase_debit : cfg.phrase_nil; }
+// Pass an existing doc to append the letter as a new page (combined PDF).
+function makeLetter(r, doc) {
+  if (doc) doc.addPage();
+  else {
+    doc = new window.jspdf.jsPDF({unit: "pt", format: "a4"});
+    doc.setProperties({title: `Balance Confirmation - ${r.name}`, author: cfg.company_name});
+  }
+  const asAt = parseDate($("#asAt").value), letterDate = parseDate($("#letterDate").value);
+  const L = 25 * MM, W = doc.internal.pageSize.getWidth() - 50 * MM, FS = 10.5, LEAD = 14;
+  let y = 20 * MM;
+  const p = (segs, justify = false) => { y = drawRich(doc, segs, L, y, W, FS, LEAD, justify); };
+  const sp = h => { y += h; };
+  const hr = (frac, th, before, after) => { y += before; doc.setLineWidth(th); doc.line(L, y, L + W * frac, y); y += after; };
+
+  p([{t: "Date:", b: true}, {t: " " + dmy(letterDate)}]); sp(10);
+  p([{t: "To,"}]); sp(6);
+  p([{t: `M/s ${r.name}`, b: true}]);
+  p([{t: `Vendor Code: ${r.code}`}]); sp(14);
+  p([{t: "Subject: Confirmation of Outstanding Balance as at ", b: true, u: true}, ...dateSegs(asAt, {b: true, u: true})]); sp(14);
+  p([{t: cfg.salutation, b: true}]); sp(8);
+  p([{t: "As part of our financial closing and reporting process, we request you to confirm the balance appearing in our books of account in your name as at "}, ...dateSegs(asAt)], true); sp(10);
+  p([{t: cfg.sign_off}]); sp(40);
+  p([{t: cfg.company_name, b: true}]); sp(4);
+  hr(1, 0.7, 4, 14);
+  p([{t: "To,"}]);
+  for (const line of [cfg.addressee, cfg.company_name, ...cfg.address_lines]) p([{t: line}]);
+  sp(12);
+  p([{t: `The balance ${balancePhrase(r.net)} of Rs. ${inr(r.net)} as at `}, ...dateSegs(asAt), {t: " is correct except as noted below:"}], true);
+  sp(34); hr(0.85, 0.6, 0, 30); hr(0.85, 0.6, 0, 40);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(FS);
+  doc.text("Date:", L, y + FS);
+  doc.text("Company Seal & Signature", L + W, y + FS, {align: "right"});
+  return doc;
+}
+
+// ------------------------------------------------------------------ preview
+let pdfUrl = null, previewTimer = null;
+function renderPick() {
+  const pool = selectedRows().length ? selectedRows() : rows;
+  const sel = $("#pick"), prev = sel.value;
+  sel.innerHTML = pool.map(r => `<option value="${esc(r.code)}">${esc(r.code)} - ${esc(r.name)}</option>`).join("");
+  if (pool.some(r => r.code === prev)) sel.value = prev;
+  schedulePreview();
+}
+function schedulePreview() { clearTimeout(previewTimer); previewTimer = setTimeout(renderPreview, 250); }
+function renderPreview() {
+  const r = rows.find(x => x.code === $("#pick").value);
+  if (!r || !$("#asAt").value || !$("#letterDate").value) return;
+  const m = mailFor(r);
+  $("#mailMeta").innerHTML = `<div><b>To:</b> ${esc(m.to) || "—"}</div><div><b>CC:</b> ${esc(m.cc) || "—"}</div><div><b>Subject:</b> ${esc(m.subject)}</div>`;
+  $("#bodyFrame").srcdoc = `<!doctype html><meta charset="utf-8"><body style="font:14px Calibri,Arial,sans-serif;color:#222;margin:12px">${m.body}</body>`;
+  if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+  pdfUrl = URL.createObjectURL(makeLetter(r).output("blob"));
+  $("#pdfFrame").src = pdfUrl;
+}
+
+// ------------------------------------------------------------------ Outlook package
+const csvCell = v => '"' + String(v ?? "").replace(/"/g, '""') + '"';
+const BAT = [
+  "@echo off",
+  "title Vendor Balance Confirmation - Outlook sender",
+  'cd /d "%~dp0"',
+  'powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0send_emails.ps1"',
+  "echo.",
+  "pause"
+].join("\r\n") + "\r\n";
+const PS1 = String.raw`
+$ErrorActionPreference = 'Stop'
+$Here = Split-Path -Parent $MyInvocation.MyCommand.Path
+$Mode = '__MODE__'
+$FromAccount = '__FROM__'
+$DelaySeconds = __DELAY__
+$RunLabel = '__LABEL__'
+
+$listPath = Join-Path $Here 'mail_list.csv'
+if (-not (Test-Path $listPath)) { Write-Host '  mail_list.csv not found. Extract the whole ZIP to a folder first, then run Send_Emails.bat from there.' -ForegroundColor Red; exit 1 }
+$list = @(Import-Csv -Path $listPath -Encoding UTF8)
+$missing = @($list | Where-Object { -not (Test-Path (Join-Path $Here $_.pdf)) })
+if ($missing.Count -gt 0) { Write-Host "  $($missing.Count) letter PDF(s) are missing. Extract the whole ZIP to a folder first." -ForegroundColor Red; exit 1 }
+
+Write-Host ''
+Write-Host '  Vendor Balance Confirmation - Outlook sender' -ForegroundColor Cyan
+Write-Host "  $RunLabel"
+Write-Host "  Emails : $($list.Count)"
+if ($Mode -eq 'Draft') { Write-Host '  Action : SAVE TO OUTLOOK DRAFTS (nothing is sent)' -ForegroundColor Yellow }
+else { Write-Host '  Action : SEND NOW' -ForegroundColor Yellow }
+if ($FromAccount) { Write-Host "  From   : $FromAccount" } else { Write-Host '  From   : Outlook default account' }
+Write-Host ''
+$answer = Read-Host '  Type YES to continue'
+if ($answer -ne 'YES') { Write-Host '  Cancelled. Nothing was done.'; exit 0 }
+
+try { $ol = New-Object -ComObject Outlook.Application }
+catch { Write-Host '  Could not start Outlook. Is the Outlook desktop app installed and signed in?' -ForegroundColor Red; exit 1 }
+
+$acc = $null
+if ($FromAccount) {
+  foreach ($a in $ol.Session.Accounts) { if ($a.SmtpAddress -ieq $FromAccount) { $acc = $a } }
+  if (-not $acc) {
+    Write-Host "  Account '$FromAccount' was not found in Outlook. Accounts available:" -ForegroundColor Red
+    foreach ($a in $ol.Session.Accounts) { Write-Host "    $($a.SmtpAddress)" }
+    exit 1
+  }
+}
+
+$logPath = Join-Path $Here 'sent_log.csv'
+$i = 0; $ok = 0; $bad = 0
+foreach ($r in $list) {
+  $i++
+  $status = if ($Mode -eq 'Draft') { 'Draft saved' } else { 'Sent' }
+  $err = ''
+  try {
+    $m = $ol.CreateItem(0)
+    $m.To = $r.to
+    if ($r.cc) { $m.CC = $r.cc }
+    $m.Subject = $r.subject
+    $m.HTMLBody = $r.body
+    [void]$m.Attachments.Add((Join-Path $Here $r.pdf))
+    if ($acc) { [void][System.__ComObject].InvokeMember('SendUsingAccount', [System.Reflection.BindingFlags]::SetProperty, $null, $m, @($acc)) }
+    if ($Mode -eq 'Draft') { $m.Save() } else { $m.Send() }
+    $ok++
+  } catch { $status = 'Failed'; $err = $_.Exception.Message; $bad++ }
+  $color = if ($status -eq 'Failed') { 'Red' } else { 'Green' }
+  Write-Host ('  [{0}/{1}] {2} - {3} : {4} {5}' -f $i, $list.Count, $r.vendor_code, $r.vendor_name, $status, $err) -ForegroundColor $color
+  [pscustomobject]@{
+    timestamp = (Get-Date -Format 's'); as_at = $r.as_at; vendor_code = $r.vendor_code; vendor_name = $r.vendor_name
+    net = $r.net; to = $r.to; cc = $r.cc; mode = $r.mode; action = $Mode; status = $status; error = $err; pdf = $r.pdf
+  } | Export-Csv -Path $logPath -NoTypeInformation -Encoding UTF8 -Append
+  if ($DelaySeconds -gt 0 -and $i -lt $list.Count) { Start-Sleep -Milliseconds ([int]($DelaySeconds * 1000)) }
+}
+Write-Host ''
+Write-Host "  Done: $ok OK, $bad failed. Log saved to sent_log.csv in this folder." -ForegroundColor Cyan
+`.trim().replace(/\n/g, "\r\n") + "\r\n";
+
+function setProgress(frac, text, bar = "#prog", label = "#progText") {
+  $(bar).style.display = frac == null ? "none" : "block";
+  $(bar + " div").style.width = ((frac || 0) * 100).toFixed(1) + "%";
+  $(label).textContent = text || "";
+}
+function sendFieldsOk() {
+  const fromAcc = $("#fromAcc").value.trim(), test = $("#testTo").value.trim();
+  if (fromAcc && !validEmails(fromAcc)) { alert("'Send from' is not a valid email address."); return false; }
+  if (test && !validEmails(test)) { alert("The test-mode address is not a valid email address."); return false; }
+  return true;
+}
+async function buildPackage(lettersOnly, list) {
+  const bar = lettersOnly ? "#dlProg" : "#prog", label = lettersOnly ? "#dlProgText" : "#progText";
+  const setProgress_ = (f, t) => setProgress(f, t, bar, label);
+  if (!list.length) { alert("No vendors are selected."); return; }
+  if (!lettersOnly && !sendFieldsOk()) return;
+  const fromAcc = $("#fromAcc").value.trim(), test = lettersOnly ? "" : $("#testTo").value.trim();
+  const btns = [$("#makePkg"), $("#dlZip"), $("#dlPdf")]; btns.forEach(b => b.disabled = true);
+  try {
+    const asAt = parseDate($("#asAt").value), now = new Date();
+    const stamp = `${ymd(now).replace(/-/g, "")}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+    const root = `BalanceConfirmation_${ymd(asAt)}_${test ? "TEST_" : ""}${stamp}`;
+    const zip = new JSZip(), folder = zip.folder(root), letters = folder.folder("letters");
+    const csv = [["vendor_code", "vendor_name", "net", "as_at", "mode", "to", "cc", "subject", "body", "pdf"].map(csvCell).join(",")];
+    for (let i = 0; i < list.length; i++) {
+      const r = list[i], file = `BC_${r.code}_${safeName(r.name)}.pdf`;
+      letters.file(file, makeLetter(r).output("arraybuffer"));
+      const m = mailFor(r);
+      csv.push([r.code, r.name, r.net.toFixed(2), ymd(asAt), test ? "TEST" : "LIVE", m.to, m.cc, m.subject, m.body, "letters\\" + file].map(csvCell).join(","));
+      if (i % 10 === 0) { setProgress_(i / list.length * 0.8, `Creating letters… ${i + 1} / ${list.length}`); await tick(); }
+    }
+    if (!lettersOnly) {
+      // the offline script can only send or save drafts; "open each mail" falls back to drafts
+      const action = $("#action").value === "Send" ? "Send" : "Draft", delay = Math.max(parseFloat($("#delay").value) || 0, 0);
+      const label = `Balance as at ${dmy(asAt)} | ${test ? "TEST mode -> " + test : "LIVE mode -> vendors"} | created ${dmy(now)} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      const ps = PS1.replace("__MODE__", action).replace("__FROM__", fromAcc.replace(/'/g, "''"))
+                    .replace("__DELAY__", String(delay)).replace("__LABEL__", label.replace(/[^\x20-\x7E]/g, "").replace(/'/g, "''"));
+      folder.file("mail_list.csv", "﻿" + csv.join("\r\n") + "\r\n");
+      folder.file("send_emails.ps1", ps);
+      folder.file("Send_Emails.bat", BAT);
+      folder.file("README.txt", [
+        "Vendor Balance Confirmation - Outlook mail package", "",
+        label, `Emails: ${list.length}`, `Action: ${action === "Draft" ? "Save to Outlook Drafts" : "Send immediately"}`, "",
+        "1. Extract this whole ZIP to a folder (right-click > Extract All).",
+        "2. Make sure the Outlook desktop app is open and signed in.",
+        "3. Double-click Send_Emails.bat and type YES.",
+        "4. A log of every mail is written to sent_log.csv in this folder.", "",
+        "letters\\        PDF letters attached to each mail",
+        "mail_list.csv   To / CC / subject / body for each vendor"
+      ].join("\r\n"));
+    }
+    const blob = await zip.generateAsync({type: "blob", compression: "DEFLATE"}, md => setProgress_(0.8 + md.percent / 500, "Building ZIP…"));
+    const name = (lettersOnly ? root.replace("BalanceConfirmation_", "Letters_") : root) + ".zip";
+    download(blob, name);
+    setProgress_(1, `Done: ${list.length} letter(s) in ${name}${lettersOnly ? "" : " — extract it and run Send_Emails.bat"}`);
+  } catch (e) {
+    setProgress_(null); alert("Could not create the ZIP: " + e.message);
+  } finally {
+    $("#dlZip").disabled = $("#dlPdf").disabled = false; renderSelection();
+  }
+}
+
+// ------------------------------------------------------------------ download letters in one go
+const SCOPES = {
+  ticked: ["Ticked vendors", () => rows.filter(r => r.send)],
+  balance: ["All vendors with balance ≥ minimum", () => rows.filter(r => Math.abs(r.net) >= minBal())],
+  all: ["All vendors", () => rows]
+};
+const scopeRows = () => SCOPES[$("#dlScope").value || "ticked"][1]();
+function renderScope() {
+  const s = $("#dlScope"), v = s.value || "ticked";
+  s.innerHTML = Object.entries(SCOPES).map(([k, [l, f]]) => `<option value="${k}">${l} (${f().length.toLocaleString("en-IN")})</option>`).join("");
+  s.value = v;
+}
+async function downloadLettersPdf() {
+  const list = scopeRows();
+  if (!list.length) { alert("No vendors in this selection."); return; }
+  const set = (f, t) => setProgress(f, t, "#dlProg", "#dlProgText");
+  $("#dlPdf").disabled = $("#dlZip").disabled = true;
+  try {
+    const asAt = parseDate($("#asAt").value);
+    let doc = null;
+    for (let i = 0; i < list.length; i++) {
+      doc = makeLetter(list[i], doc);
+      if (i % 10 === 0) { set(i / list.length, `Creating letters… ${i + 1} / ${list.length}`); await tick(); }
+    }
+    doc.setProperties({title: `Balance Confirmations as at ${dmy(asAt)}`, author: cfg.company_name});
+    const name = `Balance_Confirmations_${ymd(asAt)}_${list.length}_vendors.pdf`;
+    download(doc.output("blob"), name);
+    set(1, `Done: ${list.length} letter(s) in ${name}`);
+  } catch (e) {
+    set(null); alert("Could not create the PDF: " + e.message);
+  } finally {
+    $("#dlPdf").disabled = $("#dlZip").disabled = false;
+  }
+}
+
+// ------------------------------------------------------------------ Outlook Connector (direct sending)
+const CONNECTOR_BAT = /*CONNECTOR_BAT*/"";
+const API = (location.protocol.startsWith("http") && location.port === "8765") ? "" : "http://127.0.0.1:8765";
+function ssGet(k) { try { return sessionStorage.getItem(k) || ""; } catch (e) { return ""; } }
+function ssSet(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+const conn = {token: window.BC_TOKEN || ssGet("bc_token"), running: false, ok: false, accounts: [], accErr: ""};
+let sending = false, stopReq = false, sendLog = [];
+
+async function api(path, data) {
+  const res = await fetch(API + path, {
+    method: data ? "POST" : "GET",
+    headers: {"X-Token": conn.token, "Content-Type": "application/json"},
+    body: data ? JSON.stringify(data) : undefined
+  });
+  let j = {}; try { j = await res.json(); } catch (e) {}
+  if (!res.ok || j.ok === false) { const err = new Error(j.error || `HTTP ${res.status}`); err.http = true; throw err; }
+  return j;
+}
+function connLost() { conn.ok = false; conn.running = false; renderConn(); }
+async function checkConnector() {
+  try {
+    const p = await api("/ping");
+    conn.running = true; conn.ok = !!p.authorized;
+    if (conn.ok) {
+      ssSet("bc_token", conn.token);
+      try { conn.accounts = (await api("/accounts", {})).accounts || []; conn.accErr = ""; }
+      catch (e) { conn.accounts = []; conn.accErr = e.message; }
+    }
+  } catch (e) { conn.running = false; conn.ok = false; }
+  renderConn(); if (rows.length) renderSelection();
+}
+function renderConn() {
+  let html;
+  if (conn.ok) {
+    const acc = conn.accounts.length ? "Accounts: " + conn.accounts.map(esc).join(", ") : esc(conn.accErr ? "Could not read Outlook accounts: " + conn.accErr : "");
+    html = `<div class="conn on"><span class="dot"></span><span><b>Connected to Outlook.</b> ${acc}</span></div>`;
+  } else if (conn.running) {
+    html = `<div class="conn off"><span class="dot"></span><span><b>Outlook Connector is running.</b> Enter the access code shown in its window:</span>
+      <input type="text" id="connCode" maxlength="8" placeholder="CODE" autocomplete="off"><button class="btn" id="connGo" type="button">Connect</button>
+      ${conn.token ? '<span class="st-bad">Code not accepted – it changes every time the connector starts.</span>' : ""}</div>`;
+  } else {
+    html = `<div class="conn off"><span class="dot"></span><span><b>Outlook is not connected.</b> To send directly, double-click <b>Outlook_Connector.bat</b>
+      (keep it in the same folder as this file) – the app reopens already connected. Outlook desktop must be installed and signed in.</span>
+      <button class="btn" id="connDl" type="button">⬇ Get Outlook_Connector.bat</button><button class="btn" id="connRetry" type="button">Check again</button></div>`;
+  }
+  $("#connBox").innerHTML = html;
+  $("#accList").innerHTML = conn.accounts.map(a => `<option value="${esc(a)}">`).join("");
+  $("#openOne").disabled = !conn.ok;
+}
+function mailPayload(r, action) {
+  const test = $("#testTo").value.trim();
+  return Object.assign(mailFor(r), {
+    from: $("#fromAcc").value.trim(), action, filename: `BC_${r.code}_${safeName(r.name)}.pdf`,
+    pdf: makeLetter(r).output("datauristring").split(",").pop(),
+    as_at: $("#asAt").value, vendor_code: r.code, vendor_name: r.name, net: r.net.toFixed(2), mode: test ? "TEST" : "LIVE"
+  });
+}
+const ACTION_WORDS = {Send: ["Send", "send"], Draft: ["Save to Drafts", "save to Drafts"], Display: ["Open", "open in Outlook"]};
+async function sendDirect() {
+  const list = selectedRows();
+  if (!list.length || !sendFieldsOk()) return;
+  const action = $("#action").value, delay = Math.max(parseFloat($("#delay").value) || 0, 0);
+  sending = true; stopReq = false; sendLog = [];
+  $("#stopSend").classList.remove("hidden"); $("#results").classList.remove("hidden"); $("#resBody").innerHTML = "";
+  renderSelection();
+  for (let i = 0; i < list.length && !stopReq; i++) {
+    const r = list[i];
+    setProgress(i / list.length, `${i + 1} / ${list.length} · ${r.name}`);
+    let p = null, status, error = "";
+    try { p = mailPayload(r, action); status = (await api("/send", p)).status; }
+    catch (e) {
+      status = "Failed"; error = e.message;
+      if (!e.http) { error = "Lost connection to the Outlook Connector – is its window still open?"; stopReq = true; connLost(); }
+    }
+    sendLog.push({timestamp: new Date().toLocaleString("en-IN"), as_at: $("#asAt").value, vendor_code: r.code, vendor_name: r.name,
+                  net: r.net, to: p ? p.to : "", cc: p ? p.cc : "", mode: p ? p.mode : "", action, status, error});
+    $("#resBody").insertAdjacentHTML("beforeend", `<tr><td>${i + 1}</td><td>${esc(r.code)}</td><td>${esc(r.name)}</td><td>${esc(p ? p.to : "")}</td>
+      <td class="${status === "Failed" ? "st-bad" : "st-ok"}">${esc(status)}</td><td>${esc(error)}</td></tr>`);
+    if (delay && i < list.length - 1 && !stopReq) await new Promise(res => setTimeout(res, delay * 1000));
+  }
+  const failed = sendLog.filter(l => l.status === "Failed").length, done = sendLog.length - failed;
+  const skipped = list.length - sendLog.length;
+  const summary = `Done: ${done} OK, ${failed} failed${skipped ? `, ${skipped} not attempted (stopped)` : ""}.`;
+  setProgress(sendLog.length / list.length, summary + " The connector also saved the letters and sent_log.csv in its output folder.");
+  $("#resSummary").textContent = summary;
+  sending = false; $("#confirm").checked = false; $("#stopSend").classList.add("hidden");
+  renderSelection();
+}
+
+// ------------------------------------------------------------------ settings form
+function renderSettings() {
+  $("#settings").innerHTML = SETTING_FIELDS.map(([k, label, kind = ""]) => {
+    const v = k === "address_lines" ? cfg[k].join("\n") : cfg[k];
+    const input = kind.includes("area")
+      ? `<textarea data-s="${k}" rows="${k === "email_body" ? 7 : 3}">${esc(v)}</textarea>`
+      : `<input type="text" data-s="${k}" value="${esc(v)}">`;
+    return `<label class="f${kind.includes("wide") ? " wide" : ""}">${label}${input}</label>`;
+  }).join("");
+}
+$("#settings").addEventListener("input", e => {
+  const k = e.target.dataset.s; if (!k) return;
+  cfg[k] = k === "address_lines" ? e.target.value.split("\n").map(s => s.trim()).filter(Boolean) : e.target.value;
+  lsSet(LS_SETTINGS, cfg); schedulePreview();
+});
+$("#resetSettings").addEventListener("click", () => {
+  if (!confirm("Reset letter and email wording to the defaults?")) return;
+  cfg = Object.assign({}, DEFAULTS); lsDel(LS_SETTINGS); renderSettings(); schedulePreview();
+});
+
+// ------------------------------------------------------------------ events
+function showMsg(html, cls = "err") { $("#loadMsg").innerHTML = html ? `<div class="alert ${cls}">${html}</div>` : ""; }
+function markDrop(id, file) { const d = $(id); d.classList.toggle("done", !!file); d.querySelector(".name").textContent = file ? "✓ " + file.name : ""; }
+function refreshMasterNote() {
+  const n = master ? Object.keys(master).length : 0;
+  $("#clearMaster").classList.toggle("hidden", !n);
+  if (n && !$("#fileMaster").files.length) { $("#dropMaster").classList.add("done"); $("#dropMaster .name").textContent = `✓ Remembered from last time (${n.toLocaleString("en-IN")} vendors)`; }
+}
+async function onDump(which, input, dropId) {
+  const f = input.files[0]; markDrop(dropId, null); if (!f) return;
+  try {
+    showMsg("Reading " + esc(f.name) + "…", "info"); await tick();
+    const data = await readDump(f);
+    if (which === "adv") adv = data; else cred = data;
+    markDrop(dropId, f); showMsg("");
+    if (adv && cred) { buildRows(); renderAll(); }
+    else showMsg("Now upload the " + (adv ? "Creditor" : "Advance to Vendor") + " dump. You can add the vendor master later.", "info");
+  } catch (e) { if (which === "adv") adv = null; else cred = null; showMsg(esc(e.message)); }
+}
+$("#fileAdv").addEventListener("change", e => onDump("adv", e.target, "#dropAdv"));
+$("#fileCred").addEventListener("change", e => onDump("cred", e.target, "#dropCred"));
+$("#fileMaster").addEventListener("change", async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    master = await readMaster(f); lsSet(LS_MASTER, master); markDrop("#dropMaster", f); refreshMasterNote(); showMsg("");
+    if (rows.length) { applyMaster(); resetSend(); renderAll(); }
+  } catch (err) { showMsg(esc(err.message)); }
+});
+$("#clearMaster").addEventListener("click", () => {
+  if (!confirm("Forget the vendor master saved in this browser?")) return;
+  master = null; lsDel(LS_MASTER); $("#fileMaster").value = ""; markDrop("#dropMaster", null); refreshMasterNote();
+});
+$("#filters").addEventListener("click", e => { const f = e.target.closest("[data-f]"); if (!f) return; filter = f.dataset.f; renderFilters(); renderTable(); });
+$("#search").addEventListener("input", renderTable);
+$("#checkAll").addEventListener("change", e => { viewRows().forEach(r => r.send = e.target.checked); renderFilters(); renderTable(); renderSelection(); });
+$("#tbody").addEventListener("change", e => {
+  const tr = e.target.closest("tr[data-i]"); if (!tr) return;
+  const r = rows[+tr.dataset.i], k = e.target.dataset.k;
+  if (k === "send") r.send = e.target.checked;
+  else {
+    r[k] = normEmails(e.target.value); e.target.value = r[k];
+    if (k === "email") { e.target.classList.toggle("bad", !validEmails(r.email)); if (validEmails(r.email) && Math.abs(r.net) >= minBal()) { r.send = true; tr.querySelector("[data-k=send]").checked = true; } }
+    master = master || {}; master[r.code] = {email: r.email, cc: r.cc}; lsSet(LS_MASTER, master); refreshMasterNote();
+    renderMetrics();
+  }
+  renderFilters(); renderSelection();
+});
+$("#minBal").addEventListener("change", () => { if (!rows.length) return; resetSend(); renderFilters(); renderTable(); renderSelection(); });
+["#asAt", "#letterDate"].forEach(id => $(id).addEventListener("change", () => { savePrefs(); schedulePreview(); }));
+["#testTo", "#fromAcc", "#action", "#delay"].forEach(id => $(id).addEventListener("input", () => { savePrefs(); if (rows.length) renderSelection(); }));
+$("#confirm").addEventListener("change", renderSelection);
+$("#pick").addEventListener("change", renderPreview);
+$("#dlOne").addEventListener("click", () => {
+  const r = rows.find(x => x.code === $("#pick").value); if (r) makeLetter(r).save(`BC_${r.code}_${safeName(r.name)}.pdf`);
+});
+$("#dlMaster").addEventListener("click", () => writeXlsx(rows.map(r => ({"Vendor Code": r.code, "Vendor Name": r.name, "Email": r.email, "CC": r.cc})), "vendor_master.xlsx"));
+$("#dlBal").addEventListener("click", () => writeXlsx(rows.map(r => ({
+  "Vendor Code": r.code, "Vendor Name": r.name, "Advance": r.advance, "Creditor": r.creditor, "Net": r.net,
+  "Nature": r.net > 0 ? "Debit (due from vendor)" : r.net < 0 ? "Credit (payable to vendor)" : "Nil", "Email": r.email, "CC": r.cc, "Send": r.send ? "Yes" : ""
+})), `balances_${$("#asAt").value.replace(/-/g, "")}.xlsx`));
+$("#makePkg").addEventListener("click", () => buildPackage(false, selectedRows()));
+$("#dlZip").addEventListener("click", () => buildPackage(true, scopeRows()));
+$("#dlPdf").addEventListener("click", downloadLettersPdf);
+$("#sendNow").addEventListener("click", sendDirect);
+$("#stopSend").addEventListener("click", () => { stopReq = true; $("#progText").textContent = "Stopping after the current mail…"; });
+$("#dlLog").addEventListener("click", () => writeXlsx(sendLog, `send_log_${ymd(new Date())}.xlsx`));
+$("#openOne").addEventListener("click", async () => {
+  const r = rows.find(x => x.code === $("#pick").value);
+  if (!r || !sendFieldsOk()) return;
+  try { await api("/send", mailPayload(r, "Display")); }
+  catch (e) { if (!e.http) connLost(); alert("Could not open the mail in Outlook: " + (e.http ? e.message : "the Outlook Connector is not running.")); }
+});
+// ---- Email this vendor: share sheet / mailto / Outlook draft (.eml)
+const pickedRow = () => rows.find(x => x.code === $("#pick").value);
+const letterName = r => `BC_${r.code}_${safeName(r.name)}.pdf`;
+function htmlToText(html) {
+  const d = new DOMParser().parseFromString(html.replace(/<br\s*\/?>/gi, "\n").replace(/<\/p>/gi, "\n\n"), "text/html");
+  return d.body.textContent.replace(/\n{3,}/g, "\n\n").trim();
+}
+function shareMsg(t) { $("#shareMsg").textContent = t; }
+async function copyText(t) { try { await navigator.clipboard.writeText(t); return true; } catch (e) { return false; } }
+$("#shareFile").addEventListener("click", async () => {
+  const r = pickedRow(); if (!r) return;
+  const m = mailFor(r), file = new File([makeLetter(r).output("blob")], letterName(r), {type: "application/pdf"});
+  if (!(navigator.canShare && navigator.canShare({files: [file]}))) {
+    shareMsg("This browser can't attach files to the share menu. Use “Outlook draft” instead."); return;
+  }
+  const copied = m.to && await copyText(m.to);
+  try {
+    await navigator.share({files: [file], title: m.subject, text: htmlToText(m.body)});
+    shareMsg(copied ? `Shared. The recipient (${m.to}) was copied – paste it into the To box.` : "Shared.");
+  } catch (e) { if (e.name !== "AbortError") shareMsg("Could not share: " + e.message); }
+});
+$("#shareText").addEventListener("click", () => {
+  const r = pickedRow(); if (!r) return;
+  const m = mailFor(r), q = [];
+  if (m.cc) q.push("cc=" + encodeURIComponent(m.cc));
+  q.push("subject=" + encodeURIComponent(m.subject), "body=" + encodeURIComponent(htmlToText(m.body)));
+  location.href = "mailto:" + encodeURIComponent(m.to).replace(/%40/g, "@").replace(/%3B%20/g, ";") + "?" + q.join("&");
+  shareMsg("Opening your mail app (no attachment). Use “Letter + text” or “Outlook draft” to include the PDF.");
+});
+$("#shareEml").addEventListener("click", () => {
+  const r = pickedRow(); if (!r) return;
+  const m = mailFor(r), name = letterName(r), from = $("#fromAcc").value.trim();
+  const b64utf8 = s => btoa(unescape(encodeURIComponent(s)));
+  const wrap = s => s.replace(/.{1,76}/g, "$&\r\n");
+  const hdr = s => /^[\x20-\x7E]*$/.test(s) ? s : `=?UTF-8?B?${b64utf8(s)}?=`;
+  const B = "----=_BC_" + Date.now().toString(36);
+  const eml = [
+    "X-Unsent: 1", from ? `From: ${from}` : null, `To: ${m.to}`, m.cc ? `Cc: ${m.cc}` : null,
+    `Subject: ${hdr(m.subject)}`, "MIME-Version: 1.0", `Content-Type: multipart/mixed; boundary="${B}"`, "",
+    `--${B}`, "Content-Type: text/html; charset=UTF-8", "Content-Transfer-Encoding: base64", "",
+    wrap(b64utf8(`<html><body style="font-family:Calibri,Arial,sans-serif;font-size:11pt">${m.body}</body></html>`)),
+    `--${B}`, `Content-Type: application/pdf; name="${name}"`, `Content-Disposition: attachment; filename="${name}"`,
+    "Content-Transfer-Encoding: base64", "", wrap(makeLetter(r).output("datauristring").split(",").pop()), `--${B}--`, ""
+  ].filter(l => l !== null).join("\r\n");
+  download(new Blob([eml], {type: "message/rfc822"}), name.replace(/\.pdf$/, ".eml"));
+  shareMsg("Downloaded an Outlook draft – open it from the browser's downloads; it opens in Outlook with the letter attached, ready to Send.");
+});
+
+$("#connBox").addEventListener("click", e => {
+  const id = e.target.id;
+  if (id === "connGo") { conn.token = $("#connCode").value.trim().toUpperCase(); checkConnector(); }
+  else if (id === "connRetry") checkConnector();
+  else if (id === "connDl") download(new Blob([CONNECTOR_BAT], {type: "application/octet-stream"}), "Outlook_Connector.bat");
+});
+$("#connBox").addEventListener("keydown", e => { if (e.target.id === "connCode" && e.key === "Enter") $("#connGo").click(); });
+// pick up a connector started after the page was opened (but don't disturb code entry)
+window.addEventListener("focus", () => { if (!conn.running && !sending) checkConnector(); });
+setInterval(() => { if (!conn.running && !sending && !document.hidden) checkConnector(); }, 5000);
+
+function savePrefs() { lsSet(LS_PREFS, {asAt: $("#asAt").value, fromAcc: $("#fromAcc").value, action: $("#action").value, delay: $("#delay").value}); }
+
+// ------------------------------------------------------------------ init
+(function init() {
+  const today = new Date(), lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+  const prefs = lsGet(LS_PREFS) || {};
+  $("#asAt").value = prefs.asAt || ymd(lastMonthEnd);
+  $("#letterDate").value = ymd(today);
+  if (prefs.fromAcc) $("#fromAcc").value = prefs.fromAcc;
+  if (prefs.action) $("#action").value = prefs.action;
+  if (prefs.delay) $("#delay").value = prefs.delay;
+  if (!window.XLSX || !window.jspdf || !window.JSZip) showMsg("A built-in library failed to load. Please use the full index.html file.");
+  renderSettings(); refreshMasterNote(); renderConn(); checkConnector();
+})();
+</script>
+</body>
+</html>
