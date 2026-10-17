@@ -29,6 +29,9 @@ foreach ($k in $libs.Keys) {
   $js = [IO.File]::ReadAllText((Join-Path $web "lib\$($libs[$k])"), $utf8).Replace('</script', '<\/script')
   $html = $html.Replace("<!--LIB:$k-->", "<script>`n$js`n</script>")
 }
+# icon embedded so the header logo and favicon also show when index.html is opened from disk
+$icon = 'data:image/png;base64,' + [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $root 'icon-192.png')))
+$html = $html.Replace('src="icon-192.png"', "src=""$icon""").Replace('href="icon-192.png"', "href=""$icon""")
 $out = Join-Path $root 'index.html'
 [IO.File]::WriteAllText($out, $html, $utf8)
 Write-Host "Built $out ($([math]::Round((Get-Item $out).Length / 1KB)) KB) and Outlook_Connector.bat"

@@ -29,7 +29,8 @@
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 "Segoe UI", system-ui, -apple-system, Arial, sans-serif; }
 .wrap { max-width: 1280px; margin: 0 auto; padding: 20px 16px 60px; }
-header h1 { margin: 0; font-size: 22px; }
+header h1 { margin: 0; font-size: 22px; display: flex; align-items: center; gap: 10px; }
+header .logo { width: 40px; height: 40px; border-radius: 9px; flex: none; }
 header .top { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
 header p { margin: 4px 0 18px; color: var(--muted); }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px; margin-bottom: 16px; }
@@ -116,7 +117,7 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
 <div class="wrap">
   <header>
     <div class="top">
-      <h1>📨 Vendor Balance Confirmation</h1>
+      <h1><img class="logo" src="icon-192.png" alt="">Vendor Balance Confirmation</h1>
       <button class="btn primary hidden" id="installBtn" type="button">⬇ Install app on this laptop</button>
     </div>
     <div class="alert info hidden" id="installHelp"></div>
@@ -192,6 +193,8 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
           <span><b>Text only</b><small>Opens mail app</small></span></button>
         <button class="share-card" id="shareEml" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5 12 13l8.5-6.5"/></svg>
           <span><b>Outlook draft</b><small>To, subject &amp; letter filled in</small></span></button>
+        <button class="share-card" id="shareNew" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5 12 13l8.5-6.5"/></svg>
+          <span><b>New Outlook</b><small>Opens the mail + saves the PDF to attach</small></span></button>
       </div>
       <p class="note" id="shareMsg">Uses the Test mode address from step 4 when it is filled in.</p>
     </div>
@@ -941,16 +944,29 @@ $("#shareFile").addEventListener("click", async () => {
   const copied = m.to && await copyText(m.to);
   try {
     await navigator.share({files: [file], title: m.subject, text: htmlToText(m.body)});
-    shareMsg(copied ? `Shared. The recipient (${m.to}) was copied – paste it into the To box.` : "Shared.");
+    shareMsg((copied ? `Shared. The recipient (${m.to}) was copied – paste it into the To box.` : "Shared.") +
+      " If Outlook says the file is empty (no_name), use “New Outlook” instead.");
   } catch (e) { if (e.name !== "AbortError") shareMsg("Could not share: " + e.message); }
 });
-$("#shareText").addEventListener("click", () => {
-  const r = pickedRow(); if (!r) return;
-  const m = mailFor(r), q = [];
+function mailtoFor(m) {
+  const q = [];
   if (m.cc) q.push("cc=" + encodeURIComponent(m.cc));
   q.push("subject=" + encodeURIComponent(m.subject), "body=" + encodeURIComponent(htmlToText(m.body)));
-  location.href = "mailto:" + encodeURIComponent(m.to).replace(/%40/g, "@").replace(/%3B%20/g, ";") + "?" + q.join("&");
+  return "mailto:" + encodeURIComponent(m.to).replace(/%40/g, "@").replace(/%3B%20/g, ";") + "?" + q.join("&");
+}
+$("#shareText").addEventListener("click", () => {
+  const r = pickedRow(); if (!r) return;
+  location.href = mailtoFor(mailFor(r));
   shareMsg("Opening your mail app (no attachment). Use “Letter + text” or “Outlook draft” to include the PDF.");
+});
+// New Outlook can't take files from the Windows share menu or open .eml drafts, so open the filled-in mail
+// and save the PDF; the user drags it from the browser's downloads into the mail.
+$("#shareNew").addEventListener("click", () => {
+  const r = pickedRow(); if (!r) return;
+  const name = letterName(r);
+  location.href = mailtoFor(mailFor(r));
+  setTimeout(() => download(makeLetter(r).output("blob"), name), 300);
+  shareMsg(`Mail opened in Outlook with To, subject and text filled in. ${name} was saved – drag it from the browser's downloads (Ctrl+J) into the mail, then Send.`);
 });
 $("#shareEml").addEventListener("click", () => {
   const r = pickedRow(); if (!r) return;
