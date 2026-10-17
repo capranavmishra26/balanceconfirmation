@@ -31,6 +31,8 @@ body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 "Se
 .wrap { max-width: 1280px; margin: 0 auto; padding: 20px 16px 60px; }
 header h1 { margin: 0; font-size: 22px; display: flex; align-items: center; gap: 10px; }
 header .logo { width: 40px; height: 40px; border-radius: 9px; flex: none; }
+header .credit { display: block; font-size: 12.5px; font-weight: 600; color: var(--accent); }
+footer.credit { text-align: center; color: var(--muted); font-size: 12.5px; margin-top: 24px; }
 header .top { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
 header p { margin: 4px 0 18px; color: var(--muted); }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px; margin-bottom: 16px; }
@@ -117,7 +119,7 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
 <div class="wrap">
   <header>
     <div class="top">
-      <h1><img class="logo" src="icon-192.png" alt="">Vendor Balance Confirmation</h1>
+      <h1><img class="logo" src="icon-192.png" alt=""><span>Vendor Balance Confirmation<small class="credit">Created by CA Pranav Mishra</small></span></h1>
       <button class="btn primary hidden" id="installBtn" type="button">⬇ Install app on this laptop</button>
     </div>
     <div class="alert info hidden" id="installHelp"></div>
@@ -251,6 +253,7 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
       <div class="row" style="margin-top:10px"><button class="btn" id="makePkg" type="button" disabled>📦 Create Outlook mail package (ZIP)</button></div>
     </details>
   </section>
+  <footer class="credit">Created by CA Pranav Mishra</footer>
 </div>
 
 <!--LIB:xlsx-->
