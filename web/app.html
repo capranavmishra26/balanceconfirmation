@@ -268,6 +268,9 @@ const DEFAULTS = {
   phrase_credit: "receivable from us",
   phrase_debit: "payable by us to you",
   phrase_nil: "between us",
+  letter_nature_credit: "Cr. - Credit balance (payable by us to you)",
+  letter_nature_debit: "Dr. - Debit balance (receivable by us from you)",
+  letter_nature_nil: "Nil balance",
   email_subject: "Confirmation of Outstanding Balance as at {as_at} - {vendor_name} ({vendor_code})",
   email_body: "<p>Dear Sir/Madam,</p><p>As part of our financial closing and reporting process, please find attached our balance confirmation letter for <b>M/s {vendor_name}</b> (Vendor Code: {vendor_code}) as at <b>{as_at}</b>.</p><p>As per our books, the balance is <b>&#8377; {amount} {nature}</b>.</p><p>Kindly verify, sign and stamp the confirmation section of the attached letter and reply to this email with the scanned copy within 7 days. If there is any difference, please share your statement of account for reconciliation.</p><p>Regards,<br>Finance &amp; Accounts Team<br>{company_name}</p>",
   email_nature_credit: "(Cr. - payable to you)",
@@ -279,6 +282,7 @@ const SETTING_FIELDS = [
   ["address_lines", "Company address (one line per row)", "area"],
   ["salutation", "Salutation"], ["sign_off", "Sign-off"],
   ["phrase_credit", "Letter phrase - credit balance"], ["phrase_debit", "Letter phrase - debit balance"], ["phrase_nil", "Letter phrase - nil"],
+  ["letter_nature_credit", "Letter balance box - credit"], ["letter_nature_debit", "Letter balance box - debit"], ["letter_nature_nil", "Letter balance box - nil"],
   ["email_nature_credit", "Email nature - credit"], ["email_nature_debit", "Email nature - debit"], ["email_nature_nil", "Email nature - nil"],
   ["email_subject", "Email subject", "wide"], ["email_body", "Email body (HTML)", "area wide"]
 ];
@@ -515,6 +519,8 @@ function dateSegs(d, st = {}) {
   return [{...st, t: String(d.getDate())}, {...st, t: ordinal(d.getDate()), sup: true}, {...st, t: ` ${MONTHS[d.getMonth()]}, ${d.getFullYear()}`}];
 }
 function balancePhrase(net) { return net < 0 ? cfg.phrase_credit : net > 0 ? cfg.phrase_debit : cfg.phrase_nil; }
+function letterNature(net) { return net < 0 ? cfg.letter_nature_credit : net > 0 ? cfg.letter_nature_debit : cfg.letter_nature_nil; }
+const drcrSuffix = net => net < 0 ? " Cr." : net > 0 ? " Dr." : "";
 // Pass an existing doc to append the letter as a new page (combined PDF).
 function makeLetter(r, doc) {
   if (doc) doc.addPage();
@@ -536,13 +542,19 @@ function makeLetter(r, doc) {
   p([{t: "Subject: Confirmation of Outstanding Balance as at ", b: true, u: true}, ...dateSegs(asAt, {b: true, u: true})]); sp(14);
   p([{t: cfg.salutation, b: true}]); sp(8);
   p([{t: "As part of our financial closing and reporting process, we request you to confirm the balance appearing in our books of account in your name as at "}, ...dateSegs(asAt)], true); sp(10);
+  // balance box: amount with Dr./Cr. so the nature is clear at a glance
+  const boxTop = y; sp(7);
+  y = drawRich(doc, [{t: "Balance as per our books:", b: true}, {t: ` Rs. ${inr(r.net)}${drcrSuffix(r.net)}`, b: true}], L + 10, y, W - 20, FS + 1, LEAD + 2);
+  y = drawRich(doc, [{t: letterNature(r.net)}], L + 10, y, W - 20, FS, LEAD);
+  sp(6);
+  doc.setLineWidth(0.8); doc.rect(L, boxTop, W, y - boxTop); sp(12);
   p([{t: cfg.sign_off}]); sp(40);
   p([{t: cfg.company_name, b: true}]); sp(4);
   hr(1, 0.7, 4, 14);
   p([{t: "To,"}]);
   for (const line of [cfg.addressee, cfg.company_name, ...cfg.address_lines]) p([{t: line}]);
   sp(12);
-  p([{t: `The balance ${balancePhrase(r.net)} of Rs. ${inr(r.net)} as at `}, ...dateSegs(asAt), {t: " is correct except as noted below:"}], true);
+  p([{t: `The balance ${balancePhrase(r.net)} of `}, {t: `Rs. ${inr(r.net)}${drcrSuffix(r.net)}`, b: true}, {t: " as at "}, ...dateSegs(asAt), {t: " is correct except as noted below:"}], true);
   sp(34); hr(0.85, 0.6, 0, 30); hr(0.85, 0.6, 0, 40);
   doc.setFont("helvetica", "normal"); doc.setFontSize(FS);
   doc.text("Date:", L, y + FS);
