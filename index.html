@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vendor Balance Confirmation</title>
+<title>Balance Confirmation</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="data:image/png;base64,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">
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAkZSURBVHhe7Z29yx1FG4fzn9hZCHZa2YidYGGXTpuACKKChSIEwSYiglaBFIJYiQqCiJhKYwgxmhiMRInEhBiIH0FMDNGoJCv3o4vj78zs2TlnP2b2vn5w8eqZ3T177p1r5j7PE/Puuu3hDxsAr+zSFwA8gQDgGgQA1yAAuAYBwDUIAK5BAHANAoBrEABcgwDgGgQA1yAAuAYBwDUIAK5BAHANAoBrEABcgwDgGgQA1yAAuAYBwDUIAK5BAHANAoBrEABcgwDgGgQA1yAAuAYBwDUIAK5BAHANAoBrEABcgwDgGgQA1yAAuAYBwDUIAK5BAHANAoBrEABcgwDgmmoFuH3PoeaFN79tDp643Bz9+heYiY9O/dy8/M755q7Hj6w8oxqoUgCb/KcvXGtIOfnpyh/NPU8dXXlWpVOlALbikPJiu7E+q9KpUgDbdkl5uXj595VnVTpVCmC9JykvCDARCFBmEGAiEKDMIMBEbCLAjT9vNs++dmblWrDKQy990Vy9/peWcG0QYCI2EaDNu5/82Nz56OGVa8I/7H/vgpasdxBgIlIC3Lx1S1+K5uyl6839ez9bua5n7BdZn5+9qqWKJlVnBJiIlACXfr7R+yHSEv1HTstji8ep87/qyztBgIlICdA+gJxt3HtLtEmt1tW/JhYpgJG7qnlriXJaHt0t+9S/FhYrgLHNQ14y2y4OfetfA4sWoGWTbV6vsRSGqEVu/UvGhQDGtqte7Qy5G25S/1JxI4Ax5CSoiaHl37T+JeJKgJYh2oBaGOOzblv/knApgDH0qlgaY+52Q9S/FNwKYIw5SeZkbLmHqn8JuBagZYw2YS6m+CxD139OEOBfxl41x2bK3WyM+s8FAgRMOYmGZGp5x6r/HCBAhCnaiKGY417Hrv+UIECCqVfVXObcraao/1QgQAdzTrIu5pZzqvpPAQL0YI42I0UJ9zJ1/ccEAXoy96pb0m40R/3HAgEymGsSzi2fMlf9xwABNmDKNmTK9+rL3PUfEgTYkLFX5bl2mz6UUP+hQIAtGGuSji3XtpRS/yFAgAEYsk0Z8lpjUVr9twEBBmLbVXus3WQMSqz/piDAgGw6ibeVZ2pKrf8mIMAI5LQxfYWxzNXyKKXXPwcEGImcVX1d5m55lBrq3xcEGJGcliiVEloepZb69wEBJiCnJQpTSsuj1Fb/LhBgInJaotJaHqXG+qdAgAnp0xKV2PIotdY/BgLMQKolKrXlUWqvfwgCzMTufSebtw5/v9MW2f+/7mP7T68cUypLqH8LAkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6o/AkA2S6r/ogSwv1HNxmBcUn/DHQJMhD0EUl4QYCIQoMwgwEQgQJlBgIl49eBFrT0pIPYX/+qzKp0qBbjvmWM7X3hJWbG/Al6fVelUKYDx4PMnaIUKyekL16qc/Ea1AgAMAQKAaxAAXIMA4BoEANcgALgGAcA1CACuQQBwDQKAaxAAXIMA4BoEANcgALimSAHW5dMzV5oD73/X3P3EkZVzY7xx6JJeotm97+TKcYpGx7dlzytf7tzbuR9++9/72L/b6w88d3zlnBb77E8e+Kr54Pjl/53b1ubep4+tnBOiefHtcyvHpI639+wa70rXZ5qDKgUIY5NIzw+545GP9ZSd2ATTYxWNjm+KTQKd9LHsff2blXMNe71PbFLb59fzjVi6JmcYBBiZ3HTtBCZIKqnJkboPHd+ErvvRxASw1T0ntiPEPmcsJqUeFzseAUZG075uD9K2fU1sorRoixBm3e6h0fFc7OFrbNLZfYST1I6z1ds+a3h+6rO3C4BdI7Y7xNqbVFK1DNNHAB0vlaoEaNFJnXpoNjHC6ARa1wZpdDwXbXvs/WOrc4xYK6eCtMR2Gd0luxL7/hAGAUZGo+O2rYeJPTBDJ7xNAv1C3DUBNTqeg05Kk6HrvRX9LLFJGKKLhO4CYVTM2LVzxi06XipVCRDb4q0n1vNbQlHsn+01nUhdbZBGx3NQ8VKrdwqd0F33bahw7edvCWPXNkHC6P2FQYCR6RNbtfQhhWj7066A+nrsYabuQ8dz0OR+GdSkdr0WG9ekrmc1sMVFd4JwhwoTq5lGx0ulagG6fsynK1o4YbSF0v44dR86noNGx9eh0fEYmtRYO6H1S3r4HSlMHwFiiZ03N9UKECY2gcPVTH+8p3KkdhKNjueg0fF1aHQ8hiY1Fk5M/TFr+wvDMLGJ3Cex8+amCgHCMVuldAXXwur2r98TdFz74z73kYtmXQujaNadr5/RkrpeWD/9aVP7ZT2M1luvl0rsvLmpTgBD+3hL2ArpCt8nsV1Eo+M5aH+97kusotKvO1+/BOvk6xqzVT+M1lOP1+tZdLxUqhQgdkz4pXKTxNogjY7noK2FtmXr6DMJQ2w8jH6+MLFr6flhYsdrdLxUqhRAv6xZ2hVcV6++ibVBGh3PIXbP2pp1Edv1UruArv4W3eHCxCZ07P3axI7X6HipVCdA7DtAuJrqSqsrX4v2tZauSWLRa+Sivwuw2GTSP5ma+qMQugtYwj8KYf+rvydpj9F7CROb0Ib+zqRN7HiNjpdKFQKsSziBNDqpQ3RCdv22tCuxCRbDpFN5uxK7bs75ltQuEyY2obveL3a8RsdLpXoBwjZAt/51ffa64/smNlFTmAQqXiqp68Z2glhS5xthYhO6JfbTpNjxGh0vlSoFsIka+w9idGLpiq7E2qDwx4t90zXRUtj72P2lVlgb088XYmOx8/uca+g5Oh6ibVXseI2Ol0qRAgBMBQKAaxAAXIMA4BoEANcgALgGAcA1CACuQQBwDQKAaxAAXIMA4BoEANcgALgGAcA1CACuQQBwDQKAaxAAXIMA4BoEANcgALgGAcA1CACuQQBwDQKAaxAAXIMA4BoEANcgALgGAcA1CACuQQBwDQKAaxAAXIMA4BoEANcgALgGAcA1CACuQQBwDQKAaxAAXIMA4BoEANf8DfopDPW7MTACAAAAAElFTkSuQmCC">
@@ -74,6 +74,16 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 td.name { white-space: normal; min-width: 220px; }
 td input[type=text] { padding: 4px 6px; min-width: 200px; font-size: 12.5px; }
 td input.bad { border-color: var(--bad); background: var(--bad-soft); }
+td input.warn { border-color: var(--warn); background: var(--warn-soft); }
+td select, td input[type=date] { padding: 4px 6px; font-size: 12.5px; width: auto; }
+td input.narrow { min-width: 110px; width: 120px; }
+tr.overdue td { background: var(--warn-soft); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { font: inherit; font-weight: 600; border: 0; background: var(--card); color: var(--muted); padding: 8px 16px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button.on { background: var(--accent); color: #fff; }
+.imgprev { max-height: 60px; max-width: 220px; object-fit: contain; background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 4px; align-self: flex-start; }
+.st-warn { color: var(--warn); font-weight: 600; }
 .dr { color: var(--ok); } .cr { color: var(--accent); }
 .note { font-size: 12.5px; color: var(--muted); margin: 8px 0 0; }
 .alert { border-radius: 8px; padding: 10px 12px; margin: 10px 0 0; font-size: 13px; }
@@ -119,24 +129,29 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
 <div class="wrap">
   <header>
     <div class="top">
-      <h1><img class="logo" src="data:image/png;base64,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" alt=""><span>Vendor Balance Confirmation<small class="credit">Created by CA Pranav Mishra</small></span></h1>
-      <button class="btn primary hidden" id="installBtn" type="button">⬇ Install app on this laptop</button>
+      <h1><img class="logo" src="data:image/png;base64,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" alt=""><span>Balance Confirmation<small class="credit">Created by CA Pranav Mishra</small></span></h1>
+      <div class="row">
+        <div class="seg" id="modeSwitch" role="group" aria-label="Who to confirm with">
+          <button type="button" data-mode="vendor">Vendors</button><button type="button" data-mode="customer">Customers</button>
+        </div>
+        <button class="btn primary hidden" id="installBtn" type="button">⬇ Install app on this laptop</button>
+      </div>
     </div>
     <div class="alert info hidden" id="installHelp"></div>
-    <p>Upload SAP dumps → review net balances → create PDF letters and send them through Outlook. Runs fully offline in your browser; nothing is uploaded anywhere.</p>
+    <p>Upload SAP dumps → review net balances → create PDF letters, send them through Outlook and track replies. Runs fully offline in your browser; nothing is uploaded anywhere.</p>
   </header>
 
   <!-- STEP 1 -->
   <section class="card">
     <h2><span class="step">1</span> Upload files &amp; period</h2>
     <div class="grid g3">
-      <div class="drop" id="dropAdv"><label class="f">Advance to Vendor open items (SAP)<small>Excel, header in row 1</small></label>
-        <input type="file" id="fileAdv" accept=".xlsx,.xls"><span class="name"></span></div>
-      <div class="drop" id="dropCred"><label class="f">Creditor open items (SAP)<small>Excel, header in row 1</small></label>
-        <input type="file" id="fileCred" accept=".xlsx,.xls"><span class="name"></span></div>
-      <div class="drop" id="dropMaster"><label class="f">Vendor master (optional)<small>Columns: Vendor Code, Email, CC</small></label>
+      <div class="drop" id="dropA"><label class="f"><span id="lblA"></span><small>Excel, header in row 1</small></label>
+        <input type="file" id="fileA" accept=".xlsx,.xls"><span class="name"></span></div>
+      <div class="drop" id="dropB"><label class="f"><span id="lblB"></span><small id="lblBsub"></small></label>
+        <input type="file" id="fileB" accept=".xlsx,.xls"><span class="name"></span></div>
+      <div class="drop" id="dropMaster"><label class="f"><span data-t="{P} master (optional)"></span><small data-t="Columns: {P} Code, Email, CC"></small></label>
         <input type="file" id="fileMaster" accept=".xlsx,.xls,.csv"><span class="name"></span>
-        <button class="btn link hidden" id="clearMaster" type="button">Forget remembered vendor master</button></div>
+        <button class="btn link hidden" id="clearMaster" type="button" data-t="Forget remembered {p} master"></button></div>
     </div>
     <div class="grid g4" style="margin-top:14px">
       <label class="f">Balance as at<input type="date" id="asAt"></label>
@@ -150,29 +165,31 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
   <section class="card hidden" id="step2">
     <h2><span class="step">2</span> Review balances</h2>
     <div class="metrics" id="metrics"></div>
+    <div id="emailCheck"></div>
     <div class="row" style="justify-content:space-between">
       <div class="chips" id="filters"></div>
       <div class="row">
         <input type="search" id="search" placeholder="Search code / name / email" style="width:240px">
-        <button class="btn" id="dlMaster" type="button">⬇ Vendor master template</button>
+        <button class="btn" id="dlMaster" type="button" data-t="⬇ {P} master template"></button>
         <button class="btn" id="dlBal" type="button">⬇ Balances (Excel)</button>
       </div>
     </div>
     <div class="tablewrap"><table>
       <thead><tr>
         <th><input type="checkbox" id="checkAll" title="Tick / untick all rows shown"></th>
-        <th>Code</th><th>Vendor</th><th>Advance (Dr)</th><th>Creditor (Cr)</th><th>Net</th><th>Email</th><th>CC</th>
+        <th>Code</th><th data-t="{P}"></th><th id="thA"></th><th id="thB"></th><th>Net</th><th>Email</th><th>CC</th>
       </tr></thead>
       <tbody id="tbody"></tbody>
     </table></div>
-    <p class="note">Tick or untick <b>Send</b>, or type or correct an email in the table (separate multiple emails with <code>;</code>). The browser remembers email edits for next time. Dr = advance due from the vendor; Cr = payable to the vendor.</p>
+    <p class="note">Tick or untick <b>Send</b>, or type or correct an email in the table (separate multiple emails with <code>;</code>). The browser remembers email edits for next time.
+      Dr = receivable by us; Cr = payable by us. Red email = missing or invalid (not sent); amber = check for a typo.</p>
     <div id="selWarn"></div>
   </section>
 
   <!-- STEP 3 -->
   <section class="card hidden" id="step3">
     <h2><span class="step">3</span> Preview</h2>
-    <label class="f" style="max-width:520px">Preview vendor<select id="pick"></select></label>
+    <label class="f" style="max-width:520px"><span data-t="Preview {p}"></span><select id="pick"></select></label>
     <div class="preview">
       <div>
         <div class="mailmeta" id="mailMeta"></div>
@@ -187,7 +204,7 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
       </div>
     </div>
     <div class="emailbox">
-      <div class="sect">Email this vendor</div>
+      <div class="sect" data-t="Email this {p}"></div>
       <div class="share">
         <button class="share-card" id="shareFile" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5 12 13l8.5-6.5"/></svg>
           <span><b>Letter + text</b><small>Attach PDF via Windows share – pick Outlook</small></span></button>
@@ -201,8 +218,22 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
       <p class="note" id="shareMsg">Uses the Test mode address from step 4 when it is filled in.</p>
     </div>
     <details>
+      <summary>Letterhead &amp; signature</summary>
+      <p class="note">Saved in this browser and used on every letter (vendors and customers).</p>
+      <label class="row" style="gap:8px;margin-top:10px"><input type="checkbox" id="lhOn"> <span>Print company letterhead (logo, name and address) at the top of the letter</span></label>
+      <div class="settings">
+        <div class="drop" id="dropLogo"><label class="f">Company logo<small>PNG or JPG; shown at the top left of the letter</small></label>
+          <input type="file" id="fileLogo" accept="image/png,image/jpeg"><img class="imgprev hidden" id="prevLogo" alt="Logo">
+          <button class="btn link hidden" id="clearLogo" type="button">Remove logo</button></div>
+        <div class="drop" id="dropSign"><label class="f">Authorised signatory's signature (optional)<small>PNG with a transparent or white background works best</small></label>
+          <input type="file" id="fileSign" accept="image/png,image/jpeg"><img class="imgprev hidden" id="prevSign" alt="Signature">
+          <button class="btn link hidden" id="clearSign" type="button">Remove signature</button></div>
+      </div>
+      <div class="settings" id="settingsSign"></div>
+    </details>
+    <details>
       <summary>Edit letter &amp; email wording</summary>
-      <p class="note">Saved in this browser. Email placeholders: <code>{vendor_name}</code> <code>{vendor_code}</code> <code>{as_at}</code> <code>{as_at_html}</code> <code>{amount}</code> <code>{nature}</code> <code>{company_name}</code></p>
+      <p class="note">Saved in this browser. Email placeholders: <code>{vendor_name}</code> <code>{vendor_code}</code> (also used for customers) <code>{party}</code> (Vendor / Customer) <code>{as_at}</code> <code>{as_at_html}</code> <code>{letter_date}</code> <code>{amount}</code> <code>{nature}</code> <code>{company_name}</code></p>
       <div class="settings" id="settings"></div>
       <div class="row" style="margin-top:12px"><button class="btn" id="resetSettings" type="button">Reset to defaults</button></div>
     </details>
@@ -212,12 +243,12 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
   <section class="card hidden" id="stepDl">
     <h2>⬇ Download letters in one go</h2>
     <div class="row">
-      <label class="f" style="min-width:300px">Which vendors<select id="dlScope"></select></label>
+      <label class="f" style="min-width:300px"><span data-t="Which {ps}"></span><select id="dlScope"></select></label>
       <button class="btn primary" id="dlPdf" type="button" style="align-self:flex-end">⬇ All letters – one PDF</button>
       <button class="btn" id="dlZip" type="button" style="align-self:flex-end">⬇ All letters – ZIP (separate PDFs)</button>
     </div>
     <div class="progress" id="dlProg"><div></div></div>
-    <p class="note" id="dlProgText">One PDF is handy for printing; the ZIP gives one file per vendor.</p>
+    <p class="note" id="dlProgText">One PDF is handy for printing; the ZIP gives one file per letter.</p>
   </section>
 
   <!-- STEP 4 -->
@@ -225,7 +256,7 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
     <h2><span class="step">4</span> Send through Outlook</h2>
     <div id="connBox"></div>
     <div class="grid g4" style="margin-top:14px">
-      <label class="f">Test mode: send ALL mails to<input type="email" id="testTo" placeholder="your.name@company.com"><small>Leave blank to send to vendors. Vendor CCs are dropped in test mode.</small></label>
+      <label class="f">Test mode: send ALL mails to<input type="email" id="testTo" placeholder="your.name@company.com"><small>Leave blank for live mode. CCs are dropped in test mode, and test mails are not recorded in the tracker.</small></label>
       <label class="f">Send from (Outlook account)<input type="email" id="fromAcc" list="accList" placeholder="Leave blank for default account"><datalist id="accList"></datalist></label>
       <label class="f">Action in Outlook<select id="action">
         <option value="Draft">Save to Drafts (review, then send)</option>
@@ -244,13 +275,56 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
     <div id="results" class="hidden">
       <div class="row" style="justify-content:space-between;margin-top:6px"><b id="resSummary"></b><button class="btn" id="dlLog" type="button">⬇ Send log (Excel)</button></div>
       <div class="tablewrap" style="max-height:300px"><table>
-        <thead><tr><th>#</th><th>Code</th><th>Vendor</th><th>To</th><th>Status</th><th>Error</th></tr></thead>
+        <thead><tr><th>#</th><th>Code</th><th>Name</th><th>To</th><th>Status</th><th>Error</th></tr></thead>
         <tbody id="resBody"></tbody></table></div>
     </div>
     <details>
       <summary>No connector? Create an offline mail package (ZIP) instead</summary>
       <p class="note">The ZIP contains the letters and <b>Send_Emails.bat</b>. Extract it, double-click the .bat and type YES. It uses the Test mode / Send from / Action settings above (“Open each mail” is treated as Save to Drafts).</p>
       <div class="row" style="margin-top:10px"><button class="btn" id="makePkg" type="button" disabled>📦 Create Outlook mail package (ZIP)</button></div>
+    </details>
+  </section>
+
+  <!-- STEP 5: TRACKER -->
+  <section class="card" id="step5">
+    <h2><span class="step">5</span> Track replies &amp; reminders</h2>
+    <p class="note" style="margin-top:0">Every letter sent in live mode is recorded here automatically. Mark replies as they come in, send reminders to those who haven't replied,
+      and download the status report for the auditors. Saved in this browser only – use <b>Backup</b> to move it to another laptop.</p>
+    <div class="grid g4" style="margin-top:12px">
+      <label class="f">Balance as at<select id="trkAsAt"></select></label>
+      <label class="f">Reminder due after (days)<input type="number" id="remDays" min="1" step="1" value="7"></label>
+    </div>
+    <div id="trkEmpty" class="alert info">Nothing recorded yet. Letters you send (not in test mode) will appear here.</div>
+    <div id="trkMain" class="hidden">
+      <div class="metrics" id="trkMetrics" style="margin-top:14px"></div>
+      <div class="row" style="justify-content:space-between">
+        <div class="chips" id="trkFilters"></div>
+        <input type="search" id="trkSearch" placeholder="Search code / name / email" style="width:240px">
+      </div>
+      <div class="tablewrap"><table>
+        <thead><tr>
+          <th><input type="checkbox" id="trkAll" title="Tick / untick all rows shown"></th>
+          <th>Code</th><th>Name</th><th>Balance</th><th>Email</th><th>Sent on</th><th>Days</th><th>Reminders</th>
+          <th>Status</th><th>Reply date</th><th>Balance as per party (₹)</th><th>Remarks</th><th></th>
+        </tr></thead>
+        <tbody id="trkBody"></tbody>
+      </table></div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="remSend" type="button">🔔 Send reminder</button>
+        <button class="btn" id="remPkg" type="button">📦 Reminder mail package (ZIP)</button>
+        <button class="btn" id="trkXlsx" type="button">⬇ Audit status report (Excel)</button>
+      </div>
+      <div class="progress" id="remProg"><div></div></div>
+      <p class="note" id="remText">Reminders go to the ticked rows, with the letter attached again. They use the Test mode, Send from and Action settings in step 4.</p>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn" id="trkBackup" type="button">⬇ Backup tracker</button>
+      <label class="btn">⬆ Restore backup<input type="file" id="trkRestore" accept=".json" hidden></label>
+    </div>
+    <details>
+      <summary>Edit reminder wording</summary>
+      <p class="note">Same placeholders as the letter email, for example <code>{letter_date}</code> for the date of the original letter.</p>
+      <div class="settings" id="settingsRem"></div>
     </details>
   </section>
   <footer class="credit">Created by CA Pranav Mishra</footer>
@@ -715,11 +789,17 @@ const DEFAULTS = {
   letter_nature_debit: "Dr. - Debit balance (receivable by us from you)",
   letter_nature_nil: "Nil balance",
   email_subject: "Confirmation of Outstanding Balance as at {as_at} - {vendor_name} ({vendor_code})",
-  email_body: "<p>Dear Sir/Madam,</p><p>As part of our financial closing and reporting process, please find attached our balance confirmation letter for <b>M/s {vendor_name}</b> (Vendor Code: {vendor_code}) as at <b>{as_at}</b>.</p><p>As per our books, the balance is <b>&#8377; {amount} {nature}</b>.</p><p>Kindly verify, sign and stamp the confirmation section of the attached letter and reply to this email with the scanned copy within 7 days. If there is any difference, please share your statement of account for reconciliation.</p><p>Regards,<br>Finance &amp; Accounts Team<br>{company_name}</p>",
+  email_body: "<p>Dear Sir/Madam,</p><p>As part of our financial closing and reporting process, please find attached our balance confirmation letter for <b>M/s {vendor_name}</b> ({party} Code: {vendor_code}) as at <b>{as_at}</b>.</p><p>As per our books, the balance is <b>&#8377; {amount} {nature}</b>.</p><p>Kindly verify, sign and stamp the confirmation section of the attached letter and reply to this email with the scanned copy within 7 days. If there is any difference, please share your statement of account for reconciliation.</p><p>Regards,<br>Finance &amp; Accounts Team<br>{company_name}</p>",
   email_nature_credit: "(Cr. - payable to you)",
   email_nature_debit: "(Dr. - receivable from you)",
-  email_nature_nil: "(Nil)"
+  email_nature_nil: "(Nil)",
+  signatory_name: "",
+  signatory_designation: "Authorised Signatory",
+  reminder_subject: "Reminder: Confirmation of Outstanding Balance as at {as_at} - {vendor_name} ({vendor_code})",
+  reminder_body: "<p>Dear Sir/Madam,</p><p>This is a gentle reminder about our balance confirmation letter dated {letter_date} for <b>M/s {vendor_name}</b> ({party} Code: {vendor_code}) as at <b>{as_at}</b>, which is still awaiting your confirmation. A copy of the letter is attached again.</p><p>As per our books, the balance is <b>&#8377; {amount} {nature}</b>.</p><p>Kindly verify, sign and stamp the confirmation section of the letter and reply to this email with the scanned copy at the earliest. If there is any difference, please share your statement of account for reconciliation.</p><p>Regards,<br>Finance &amp; Accounts Team<br>{company_name}</p>"
 };
+const SIGN_FIELDS = [["signatory_name", "Signatory name (printed under the signature, optional)"], ["signatory_designation", "Signatory designation"]];
+const REM_FIELDS = [["reminder_subject", "Reminder subject", "wide"], ["reminder_body", "Reminder body (HTML)", "area wide"]];
 const SETTING_FIELDS = [
   ["company_name", "Company name"], ["addressee", "Addressee (reply section)"],
   ["address_lines", "Company address (one line per row)", "area"],
@@ -729,8 +809,20 @@ const SETTING_FIELDS = [
   ["email_nature_credit", "Email nature - credit"], ["email_nature_debit", "Email nature - debit"], ["email_nature_nil", "Email nature - nil"],
   ["email_subject", "Email subject", "wide"], ["email_body", "Email body (HTML)", "area wide"]
 ];
-const COL_VENDOR = "Vendor", COL_NAME = "Vendor Account: Name 1", COL_AMOUNT = "Company Code Currency Value";
-const LS_SETTINGS = "bc_settings_v1", LS_MASTER = "bc_master_v1", LS_PREFS = "bc_prefs_v1";
+const COL_AMOUNT = "Company Code Currency Value";
+// Vendors: dump A = advances (Dr), dump B = creditors (Cr). Customers: dump A = debtors (Dr), dump B = customer advances (Cr), optional.
+// Dr/Cr keep their meaning from our books for both: Dr = receivable by us, Cr = payable by us.
+const MODES = {
+  vendor: {P: "Vendor", p: "vendor", ps: "vendors", codeCol: "Vendor", nameCol: "Vendor Account: Name 1", master: "bc_master_v1",
+    a: {label: "Advance to Vendor open items (SAP)", col: "Advance (Dr)", lines: "Advance lines / vendors"},
+    b: {label: "Creditor open items (SAP)", col: "Creditor (Cr)", lines: "Creditor lines / vendors", optional: false},
+    dr: "Debit (advance)", cr: "Credit (payable)", drLong: "Debit (advance due from vendor)", crLong: "Credit (payable to vendor)"},
+  customer: {P: "Customer", p: "customer", ps: "customers", codeCol: "Customer", nameCol: "Customer Account: Name 1", master: "bc_master_cust_v1",
+    a: {label: "Customer outstanding report or debtor open items (SAP)", col: "Receivable (Dr)", lines: "Debtor lines / customers"},
+    b: {label: "Customer advance open items (SAP)", col: "Advance (Cr)", lines: "Advance lines / customers", optional: true},
+    dr: "Debit (receivable)", cr: "Credit (advance)", drLong: "Debit (receivable from customer)", crLong: "Credit (advance from customer)"}
+};
+const LS_SETTINGS = "bc_settings_v1", LS_PREFS = "bc_prefs_v1", LS_IMAGES = "bc_images_v1", LS_TRACK = "bc_tracker_v1";
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 // ------------------------------------------------------------------ helpers
@@ -759,7 +851,12 @@ function inr(a) {
 }
 const signed = a => (a < 0 ? "-" : "") + inr(a);
 const drcr = a => a > 0 ? `<span class="dr">${inr(a)} Dr</span>` : a < 0 ? `<span class="cr">${inr(a)} Cr</span>` : "Nil";
-function cleanCode(v) { const s = String(v ?? "").trim().replace(/\.0$/, ""); return (s === "nan" || s === "None") ? "" : s; }
+// leading zeros dropped so "0000200003" (SAP) and 200003 (Excel number in the master) match
+function cleanCode(v) {
+  const s = String(v ?? "").trim().replace(/\.0$/, "");
+  if (s === "nan" || s === "None") return "";
+  return /^\d+$/.test(s) ? (s.replace(/^0+/, "") || "0") : s;
+}
 function toNum(v) {
   if (typeof v === "number") return v;
   let s = String(v ?? "").replace(/,/g, "").trim(); if (!s) return 0;
@@ -771,7 +868,20 @@ function validEmails(s) {
   const parts = String(s || "").split(";").map(p => p.trim()).filter(Boolean);
   return parts.length > 0 && parts.every(p => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(p));
 }
-const safeName = s => (String(s).replace(/[^A-Za-z0-9._ -]+/g, "").trim().slice(0, 60) || "vendor");
+const TYPO = /@(gmial|gamil|gmal|gnail|gmail\.co$|yaho\.|yahooo|hotmial|hotmal|outlok|rediffmal|redifmail)|\.(con|cmo|comm|cm|nte|ogr)$|\.\.|\.$/i;
+// "bad" stops the mail (missing / invalid To or CC); "warn" only flags a likely typo.
+function emailIssue(r) {
+  if (!r.email) return {level: "bad", text: "Missing email"};
+  if (!validEmails(r.email)) return {level: "bad", text: "Invalid email"};
+  if (r.cc && !validEmails(r.cc)) return {level: "bad", text: "Invalid CC"};
+  const all = (r.email + ";" + r.cc).split(";").map(s => s.trim()).filter(Boolean);
+  const typo = all.find(e => TYPO.test(e));
+  if (typo) return {level: "warn", text: "Possible typo: " + typo};
+  return null;
+}
+const mailOk = r => { const i = emailIssue(r); return !i || i.level !== "bad"; };
+const safeName = s => (String(s).replace(/[^A-Za-z0-9._ -]+/g, "").trim().slice(0, 60) || "letter");
+const letterName = r => `BC_${r.code}_${safeName(r.name)}.pdf`;
 function fill(tpl, vals) { return tpl.replace(/\{(\w+)\}/g, (m, k) => (k in vals ? vals[k] : m)); }
 function download(blob, name) {
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
@@ -784,10 +894,15 @@ const tick = () => new Promise(r => setTimeout(r, 0));
 
 // ------------------------------------------------------------------ state
 let cfg = Object.assign({}, DEFAULTS, lsGet(LS_SETTINGS) || {});
-let master = lsGet(LS_MASTER);          // { code: {email, cc} }
-let adv = null, cred = null;            // parsed dump lines
-let rows = [];                          // one per vendor
+// wording saved before customer mode existed said "Vendor Code"
+cfg.email_body = cfg.email_body.replace("(Vendor Code: {vendor_code})", "({party} Code: {vendor_code})");
+let mode = (lsGet(LS_PREFS) || {}).mode === "customer" ? "customer" : "vendor";
+const M = () => MODES[mode];
+let master = lsGet(M().master);         // { code: {email, cc} }
+let dumpA = null, dumpB = null;         // parsed dump lines
+let rows = [];                          // one per party
 let filter = "All";
+let images = lsGet(LS_IMAGES) || {};    // {logo, sign: data URLs, lh: letterhead on/off}
 
 // ------------------------------------------------------------------ reading Excel
 async function readRows(file) {
@@ -798,21 +913,33 @@ async function readRows(file) {
 async function readDump(file) {
   const data = await readRows(file);
   const cols = data.length ? Object.keys(data[0]) : [];
-  const missing = [COL_VENDOR, COL_NAME, COL_AMOUNT].filter(c => !cols.includes(c));
-  if (missing.length) throw new Error(`${file.name}: column(s) not found: ${missing.join(", ")}`);
-  return data.map(r => ({code: cleanCode(r[COL_VENDOR]), name: String(r[COL_NAME] ?? "").trim(), amt: toNum(r[COL_AMOUNT])}))
-             .filter(r => r.code !== "");      // drops the grand-total row
+  const m = M(), key = m.p;
+  // standard SAP line-item layout first, then other layouts such as the customer outstanding report
+  // (Customer / Customer Name / Total Due); office, group and cash / cheque columns are never used
+  const code = cols.find(c => c === m.codeCol) || findCol(cols, [key + " code", key + " account", key], ["name", "group"]);
+  const name = cols.find(c => c === m.nameCol) || findCol(cols, [key + " name", "name 1", "name"], ["office", "group", "plant"]);
+  const amt = cols.find(c => c === COL_AMOUNT) || findCol(cols, ["company code currency value", "total due", "closing balance", "amount in local", "local currency", "amount"],
+    ["document currency", "doc. curr", "cash", "cheque", "credit amount", "security", "opening"]);
+  const missing = [[code, m.codeCol], [name, m.nameCol], [amt, COL_AMOUNT]].filter(([c]) => !c).map(([, want]) => want);
+  if (missing.length) throw new Error(`${file.name}: column(s) not found: ${missing.join(", ")}. Is this a ${m.p} file?`);
+  const out = data.map(r => ({code: cleanCode(r[code]), name: String(r[name] ?? "").trim(), amt: toNum(r[amt])}))
+                  .filter(r => r.code !== "");      // drops the grand-total row
+  out.cols = `${m.P} code = “${code}”, name = “${name}”, amount = “${amt}”`;
+  return out;
 }
 function findCol(cols, keys, exclude = []) {
-  return cols.find(c => { const l = c.toLowerCase(); return keys.some(k => l.includes(k)) && !exclude.some(x => l.includes(x)); });
+  for (const k of keys) {
+    const c = cols.find(c => { const l = c.toLowerCase(); return l.includes(k) && !exclude.some(x => l.includes(x)); });
+    if (c) return c;
+  }
 }
 async function readMaster(file) {
   const data = await readRows(file);
   const cols = data.length ? Object.keys(data[0]) : [];
-  const code = findCol(cols, ["vendor code", "vendor", "code", "supplier"]);
+  const code = findCol(cols, [M().p + " code", "vendor code", "customer code", "vendor", "customer", "code", "supplier"]);
   const email = findCol(cols, ["email", "e-mail", "mail"], ["cc"]);
   const cc = cols.find(c => c.toLowerCase().trim() === "cc") || findCol(cols, ["cc"], ["account", "acc "]);
-  if (!code || !email) throw new Error("Vendor master needs a 'Vendor Code' and an 'Email' column.");
+  if (!code || !email) throw new Error(`${M().P} master needs a '${M().P} Code' and an 'Email' column.`);
   const m = {};
   for (const r of data) { const k = cleanCode(r[code]); if (k) m[k] = {email: normEmails(r[email]), cc: cc ? normEmails(r[cc]) : ""}; }
   return m;
@@ -821,12 +948,12 @@ async function readMaster(file) {
 // ------------------------------------------------------------------ balances
 function buildRows() {
   const map = new Map();
-  const get = code => { if (!map.has(code)) map.set(code, {code, nameA: "", nameC: "", advance: 0, creditor: 0}); return map.get(code); };
-  for (const r of adv) { const v = get(r.code); v.advance += r.amt; if (!v.nameA) v.nameA = r.name; }
-  for (const r of cred) { const v = get(r.code); v.creditor += r.amt; if (!v.nameC) v.nameC = r.name; }
+  const get = code => { if (!map.has(code)) map.set(code, {code, nameA: "", nameB: "", a: 0, b: 0}); return map.get(code); };
+  for (const r of dumpA) { const v = get(r.code); v.a += r.amt; if (!v.nameA) v.nameA = r.name; }
+  for (const r of dumpB || []) { const v = get(r.code); v.b += r.amt; if (!v.nameB) v.nameB = r.name; }
   rows = [...map.values()].map(v => {
-    const advance = round2(v.advance), creditor = round2(v.creditor), net = round2(advance + creditor);
-    return {code: v.code, name: v.nameC || v.nameA, advance, creditor, net, email: "", cc: "", send: false};
+    const a = round2(v.a), b = round2(v.b), net = round2(a + b);
+    return {code: v.code, name: v.nameB || v.nameA, a, b, net, email: "", cc: "", send: false};
   }).sort((a, b) => a.code.localeCompare(b.code, undefined, {numeric: true}));
   applyMaster(); resetSend();
 }
@@ -835,36 +962,74 @@ function applyMaster() {
   for (const r of rows) { const m = master[r.code]; if (m) { r.email = m.email; r.cc = m.cc; } }
 }
 function minBal() { return Math.max(parseFloat($("#minBal").value) || 0, 0.01); }
-function resetSend() { const mb = minBal(); for (const r of rows) r.send = validEmails(r.email) && Math.abs(r.net) >= mb; }
-const selectedRows = () => rows.filter(r => r.send && validEmails(r.email));
+function resetSend() { const mb = minBal(); for (const r of rows) r.send = mailOk(r) && Math.abs(r.net) >= mb; }
+const selectedRows = () => rows.filter(r => r.send && mailOk(r));
 
 // ------------------------------------------------------------------ render: step 2
+let dupCache = null;   // email -> how many rows use it; cleared whenever emails or rows change
+function dupEmails() {
+  const seen = new Map();
+  for (const r of rows) for (const e of r.email.split(";").map(s => s.trim().toLowerCase()).filter(Boolean)) seen.set(e, (seen.get(e) || 0) + 1);
+  return seen;
+}
+const issueIs = (lvl, text) => r => { const i = emailIssue(r); return !!i && i.level === lvl && (!text || i.text === text); };
 const FILTERS = {
   "All": () => true,
   "Ticked": r => r.send,
-  "Missing email": r => !validEmails(r.email),
-  "Debit (advance)": r => r.net > 0,
+  "Missing email": issueIs("bad", "Missing email"),
+  "Invalid email / CC": r => { const i = emailIssue(r); return !!i && i.level === "bad" && i.text !== "Missing email"; },
+  "Possible typo": issueIs("warn"),
+  "Shared email": r => r.email.split(";").some(e => (dupCache ||= dupEmails()).get(e.trim().toLowerCase()) > 1),
+  "Debit": r => r.net > 0,
   "Credit": r => r.net < 0
 };
+const filterLabel = f => f === "Debit" ? M().dr : f === "Credit" ? M().cr : f;
 function viewRows() {
   const q = $("#search").value.trim().toLowerCase();
   return rows.filter(FILTERS[filter]).filter(r => !q || (r.code + " " + r.name + " " + r.email + " " + r.cc).toLowerCase().includes(q));
 }
 function renderFilters() {
-  $("#filters").innerHTML = Object.keys(FILTERS).map(f =>
-    `<button class="chip${f === filter ? " on" : ""}" data-f="${esc(f)}" type="button">${esc(f)} (${rows.filter(FILTERS[f]).length.toLocaleString("en-IN")})</button>`).join("");
+  dupCache = null;
+  $("#filters").innerHTML = Object.keys(FILTERS).map(f => {
+    const n = rows.filter(FILTERS[f]).length;
+    if (!n && !["All", "Ticked", "Debit", "Credit"].includes(f) && f !== filter) return "";   // hide empty email-check chips
+    return `<button class="chip${f === filter ? " on" : ""}" data-f="${esc(f)}" type="button">${esc(filterLabel(f))} (${n.toLocaleString("en-IN")})</button>`;
+  }).join("");
+  renderEmailCheck();
+}
+// summary of email problems among the balances that would be confirmed
+function renderEmailCheck() {
+  const pool = rows.filter(r => Math.abs(r.net) >= minBal());
+  const count = f => pool.filter(FILTERS[f]).length;
+  const miss = count("Missing email"), inv = count("Invalid email / CC"), typo = count("Possible typo");
+  const parts = [];
+  if (miss) parts.push(`<b>${miss}</b> missing`);
+  if (inv) parts.push(`<b>${inv}</b> invalid email or CC`);
+  if (typo) parts.push(`<b>${typo}</b> possible typo(s)`);
+  $("#emailCheck").innerHTML = !pool.length ? "" : parts.length
+    ? `<div class="alert warn" style="margin:0 0 12px">Email check (${pool.length} with balance ≥ minimum): ${parts.join(", ")}.
+        Missing and invalid ones are not sent – fix them in the table, or <button class="btn link" id="dlIssues" type="button">download the list (Excel)</button> to get them corrected.</div>`
+    : `<div class="alert info" style="margin:0 0 12px">Email check: all ${pool.length} ${M().ps} with balance ≥ minimum have valid email addresses.</div>`;
 }
 function renderMetrics() {
   const tot = rows.reduce((a, r) => a + r.net, 0);
   const uniq = arr => new Set(arr.map(r => r.code)).size;
+  const lines = arr => arr ? `${arr.length.toLocaleString("en-IN")} / ${uniq(arr).toLocaleString("en-IN")}` : "not uploaded";
   const m = [
-    ["Advance lines / vendors", `${adv.length.toLocaleString("en-IN")} / ${uniq(adv).toLocaleString("en-IN")}`],
-    ["Creditor lines / vendors", `${cred.length.toLocaleString("en-IN")} / ${uniq(cred).toLocaleString("en-IN")}`],
-    ["Total vendors", rows.length.toLocaleString("en-IN")],
-    ["With valid email", rows.filter(r => validEmails(r.email)).length.toLocaleString("en-IN")],
+    [M().a.lines, lines(dumpA)],
+    [M().b.lines, lines(dumpB)],
+    ["Total " + M().ps, rows.length.toLocaleString("en-IN")],
+    ["With valid email", rows.filter(mailOk).length.toLocaleString("en-IN")],
     ["Net balance (₹)", inr(tot) + (tot < 0 ? " Cr" : tot > 0 ? " Dr" : "")]
   ];
   $("#metrics").innerHTML = m.map(([k, v]) => `<div class="metric"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+}
+function emailCell(r, k) {
+  const v = r[k], typo = v.split(";").map(s => s.trim()).find(e => e && TYPO.test(e));
+  const [cls, tip] = (k === "email" && !v) ? ["bad", "Missing email"]
+    : (v && !validEmails(v)) ? ["bad", "Invalid " + (k === "email" ? "email" : "CC")]
+    : typo ? ["warn", "Possible typo: " + typo] : ["", ""];
+  return `<input type="text" data-k="${k}" value="${esc(v)}"${cls ? ` class="${cls}" title="${esc(tip)}"` : ""}>`;
 }
 function renderTable() {
   const v = viewRows();
@@ -873,18 +1038,17 @@ function renderTable() {
     return `<tr data-i="${i}">
       <td><input type="checkbox" data-k="send"${r.send ? " checked" : ""}></td>
       <td>${esc(r.code)}</td><td class="name">${esc(r.name)}</td>
-      <td class="num">${signed(r.advance)}</td><td class="num">${signed(r.creditor)}</td><td class="num">${drcr(r.net)}</td>
-      <td><input type="text" data-k="email" value="${esc(r.email)}"${validEmails(r.email) ? "" : ' class="bad"'}></td>
-      <td><input type="text" data-k="cc" value="${esc(r.cc)}"></td></tr>`;
-  }).join("") || `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px">No vendors match.</td></tr>`;
+      <td class="num">${signed(r.a)}</td><td class="num">${signed(r.b)}</td><td class="num">${drcr(r.net)}</td>
+      <td>${emailCell(r, "email")}</td><td>${emailCell(r, "cc")}</td></tr>`;
+  }).join("") || `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px">No ${M().ps} match.</td></tr>`;
   $("#checkAll").checked = v.length > 0 && v.every(r => r.send);
 }
 function renderSelection() {
-  const sel = selectedRows(), bad = rows.filter(r => r.send && !validEmails(r.email));
-  $("#selWarn").innerHTML = bad.length ? `<div class="alert warn">${bad.length} ticked vendor(s) have no valid email and will be skipped.</div>` : "";
+  const sel = selectedRows(), bad = rows.filter(r => r.send && !mailOk(r));
+  $("#selWarn").innerHTML = bad.length ? `<div class="alert warn">${bad.length} ticked ${M().p}(s) have a missing or invalid email / CC and will be skipped.</div>` : "";
   const test = $("#testTo").value.trim();
-  const mode = test ? `TEST mode → every mail goes to ${esc(test)}` : "LIVE mode → mails go to vendors";
-  $("#sendSummary").innerHTML = `${sel.length.toLocaleString("en-IN")} vendor(s) selected · ${mode}`;
+  const modeTxt = test ? `TEST mode → every mail goes to ${esc(test)}` : `LIVE mode → mails go to ${M().ps}`;
+  $("#sendSummary").innerHTML = `${sel.length.toLocaleString("en-IN")} ${M().p}(s) selected · ${modeTxt}`;
   const [label, verb] = ACTION_WORDS[$("#action").value] || ACTION_WORDS.Draft;
   $("#confirmText").textContent = `I have reviewed the list and want to ${verb} ${sel.length} email(s).`;
   const ready = $("#confirm").checked && sel.length > 0 && !sending;
@@ -900,19 +1064,24 @@ function renderAll() {
 
 // ------------------------------------------------------------------ email values
 function natureText(net) { return net < 0 ? cfg.email_nature_credit : net > 0 ? cfg.email_nature_debit : cfg.email_nature_nil; }
+// Tracker records carry their own as-at / letter date / party; rows from the current upload use the page's.
+const rowAsAt = r => parseDate(r.asAt || $("#asAt").value);
+const rowLetterDate = r => parseDate(r.letterDate || $("#letterDate").value);
+const rowParty = r => MODES[r.mode || mode];
 function mailValues(r, html) {
-  const asAt = parseDate($("#asAt").value), e = html ? esc : (s => s);
+  const asAt = rowAsAt(r), e = html ? esc : (s => s);
   return {
     vendor_code: e(r.code), vendor_name: e(r.name), as_at: longDate(asAt), as_at_html: longDateHtml(asAt),
+    letter_date: longDate(rowLetterDate(r)), party: rowParty(r).P,
     amount: inr(r.net), nature: e(natureText(r.net)), company_name: e(cfg.company_name)
   };
 }
-function mailFor(r) {
+function mailFor(r, reminder = false) {
   const test = $("#testTo").value.trim();
   return {
     to: test || r.email, cc: test ? "" : r.cc,
-    subject: fill(cfg.email_subject, mailValues(r, false)),
-    body: fill(cfg.email_body, mailValues(r, true))
+    subject: fill(reminder ? cfg.reminder_subject : cfg.email_subject, mailValues(r, false)),
+    body: fill(reminder ? cfg.reminder_body : cfg.email_body, mailValues(r, true))
   };
 }
 
@@ -971,17 +1140,38 @@ function makeLetter(r, doc) {
     doc = new window.jspdf.jsPDF({unit: "pt", format: "a4"});
     doc.setProperties({title: `Balance Confirmation - ${r.name}`, author: cfg.company_name});
   }
-  const asAt = parseDate($("#asAt").value), letterDate = parseDate($("#letterDate").value);
+  const asAt = rowAsAt(r), letterDate = rowLetterDate(r);
   const L = 25 * MM, W = doc.internal.pageSize.getWidth() - 50 * MM, FS = 10.5, LEAD = 14;
   let y = 20 * MM;
   const p = (segs, justify = false) => { y = drawRich(doc, segs, L, y, W, FS, LEAD, justify); };
   const sp = h => { y += h; };
   const hr = (frac, th, before, after) => { y += before; doc.setLineWidth(th); doc.line(L, y, L + W * frac, y); y += after; };
+  // fits an uploaded image into a box, keeping its proportions
+  const fit = (img, maxW, maxH) => { const s = Math.min(maxW / img.w, maxH / img.h); return [img.w * s, img.h * s]; };
+
+  if (images.lh) {
+    // letterhead: logo on the left, company name and address on the right (centred when there is no logo)
+    y = 14 * MM;
+    const top = y, right = L + W, centre = L + W / 2;
+    let logoH = 0;
+    if (images.logo) {
+      const [w, h] = fit(images.logo, 50 * MM, 18 * MM);
+      doc.addImage(images.logo.src, "PNG", L, top, w, h, "bc_logo", "FAST"); logoH = h;   // alias: stored once per PDF
+    }
+    const x = images.logo ? right : centre, align = images.logo ? "right" : "center";
+    doc.setFont("helvetica", "bold"); doc.setFontSize(13);
+    doc.text(cfg.company_name, x, top + 13, {align});
+    doc.setFont("helvetica", "normal"); doc.setFontSize(8.5);
+    let ty = top + 13;
+    for (const line of cfg.address_lines) { ty += 11; doc.text(line, x, ty, {align}); }
+    y = Math.max(top + logoH, ty + 4) + 6;
+    doc.setLineWidth(1.2); doc.line(L, y, right, y); y += 16;
+  }
 
   p([{t: "Date:", b: true}, {t: " " + dmy(letterDate)}]); sp(10);
   p([{t: "To,"}]); sp(6);
   p([{t: `M/s ${r.name}`, b: true}]);
-  p([{t: `Vendor Code: ${r.code}`}]); sp(14);
+  p([{t: `${rowParty(r).P} Code: ${r.code}`}]); sp(14);
   p([{t: "Subject: Confirmation of Outstanding Balance as at ", b: true, u: true}, ...dateSegs(asAt, {b: true, u: true})]); sp(14);
   p([{t: cfg.salutation, b: true}]); sp(8);
   p([{t: "As part of our financial closing and reporting process, we request you to confirm the balance appearing in our books of account in your name as at "}, ...dateSegs(asAt)], true); sp(10);
@@ -991,8 +1181,17 @@ function makeLetter(r, doc) {
   y = drawRich(doc, [{t: letterNature(r.net)}], L + 10, y, W - 20, FS, LEAD);
   sp(6);
   doc.setLineWidth(0.8); doc.rect(L, boxTop, W, y - boxTop); sp(12);
-  p([{t: cfg.sign_off}]); sp(40);
-  p([{t: cfg.company_name, b: true}]); sp(4);
+  p([{t: cfg.sign_off}]);
+  if (images.sign) {
+    const [w, h] = fit(images.sign, 45 * MM, 34);
+    doc.addImage(images.sign.src, "PNG", L, y + 3, w, h, "bc_sign", "FAST"); sp(42);
+  } else sp(40);
+  p([{t: cfg.company_name, b: true}]);
+  if (images.sign || cfg.signatory_name) {
+    if (cfg.signatory_name) p([{t: cfg.signatory_name}]);
+    if (cfg.signatory_designation) p([{t: cfg.signatory_designation}]);
+  }
+  sp(4);
   hr(1, 0.7, 4, 14);
   p([{t: "To,"}]);
   for (const line of [cfg.addressee, cfg.company_name, ...cfg.address_lines]) p([{t: line}]);
@@ -1030,7 +1229,7 @@ function renderPreview() {
 const csvCell = v => '"' + String(v ?? "").replace(/"/g, '""') + '"';
 const BAT = [
   "@echo off",
-  "title Vendor Balance Confirmation - Outlook sender",
+  "title Balance Confirmation - Outlook sender",
   'cd /d "%~dp0"',
   'powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0send_emails.ps1"',
   "echo.",
@@ -1051,7 +1250,7 @@ $missing = @($list | Where-Object { -not (Test-Path (Join-Path $Here $_.pdf)) })
 if ($missing.Count -gt 0) { Write-Host "  $($missing.Count) letter PDF(s) are missing. Extract the whole ZIP to a folder first." -ForegroundColor Red; exit 1 }
 
 Write-Host ''
-Write-Host '  Vendor Balance Confirmation - Outlook sender' -ForegroundColor Cyan
+Write-Host '  Balance Confirmation - Outlook sender' -ForegroundColor Cyan
 Write-Host "  $RunLabel"
 Write-Host "  Emails : $($list.Count)"
 if ($Mode -eq 'Draft') { Write-Host '  Action : SAVE TO OUTLOOK DRAFTS (nothing is sent)' -ForegroundColor Yellow }
@@ -1114,37 +1313,37 @@ function sendFieldsOk() {
   if (test && !validEmails(test)) { alert("The test-mode address is not a valid email address."); return false; }
   return true;
 }
-async function buildPackage(lettersOnly, list) {
-  const bar = lettersOnly ? "#dlProg" : "#prog", label = lettersOnly ? "#dlProgText" : "#progText";
+async function buildPackage(lettersOnly, list, reminder = false) {
+  const bar = reminder ? "#remProg" : lettersOnly ? "#dlProg" : "#prog", label = reminder ? "#remText" : lettersOnly ? "#dlProgText" : "#progText";
   const setProgress_ = (f, t) => setProgress(f, t, bar, label);
-  if (!list.length) { alert("No vendors are selected."); return; }
+  if (!list.length) { alert(`No ${M().ps} are selected.`); return; }
   if (!lettersOnly && !sendFieldsOk()) return;
   const fromAcc = $("#fromAcc").value.trim(), test = lettersOnly ? "" : $("#testTo").value.trim();
-  const btns = [$("#makePkg"), $("#dlZip"), $("#dlPdf")]; btns.forEach(b => b.disabled = true);
+  const btns = [$("#makePkg"), $("#dlZip"), $("#dlPdf"), $("#remPkg")]; btns.forEach(b => b.disabled = true);
   try {
-    const asAt = parseDate($("#asAt").value), now = new Date();
+    const asAt = rowAsAt(list[0]), now = new Date();
     const stamp = `${ymd(now).replace(/-/g, "")}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-    const root = `BalanceConfirmation_${ymd(asAt)}_${test ? "TEST_" : ""}${stamp}`;
+    const root = `${reminder ? "Reminders" : "BalanceConfirmation"}_${ymd(asAt)}_${test ? "TEST_" : ""}${stamp}`;
     const zip = new JSZip(), folder = zip.folder(root), letters = folder.folder("letters");
     const csv = [["vendor_code", "vendor_name", "net", "as_at", "mode", "to", "cc", "subject", "body", "pdf"].map(csvCell).join(",")];
     for (let i = 0; i < list.length; i++) {
-      const r = list[i], file = `BC_${r.code}_${safeName(r.name)}.pdf`;
+      const r = list[i], file = letterName(r);
       letters.file(file, makeLetter(r).output("arraybuffer"));
-      const m = mailFor(r);
-      csv.push([r.code, r.name, r.net.toFixed(2), ymd(asAt), test ? "TEST" : "LIVE", m.to, m.cc, m.subject, m.body, "letters\\" + file].map(csvCell).join(","));
+      const m = mailFor(r, reminder);
+      csv.push([r.code, r.name, r.net.toFixed(2), ymd(rowAsAt(r)), test ? "TEST" : "LIVE", m.to, m.cc, m.subject, m.body, "letters\\" + file].map(csvCell).join(","));
       if (i % 10 === 0) { setProgress_(i / list.length * 0.8, `Creating letters… ${i + 1} / ${list.length}`); await tick(); }
     }
     if (!lettersOnly) {
       // the offline script can only send or save drafts; "open each mail" falls back to drafts
       const action = $("#action").value === "Send" ? "Send" : "Draft", delay = Math.max(parseFloat($("#delay").value) || 0, 0);
-      const label = `Balance as at ${dmy(asAt)} | ${test ? "TEST mode -> " + test : "LIVE mode -> vendors"} | created ${dmy(now)} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      const label = `${reminder ? "REMINDERS | " : ""}Balance as at ${dmy(asAt)} | ${test ? "TEST mode -> " + test : "LIVE mode -> " + rowParty(list[0]).ps} | created ${dmy(now)} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
       const ps = PS1.replace("__MODE__", action).replace("__FROM__", fromAcc.replace(/'/g, "''"))
                     .replace("__DELAY__", String(delay)).replace("__LABEL__", label.replace(/[^\x20-\x7E]/g, "").replace(/'/g, "''"));
       folder.file("mail_list.csv", "﻿" + csv.join("\r\n") + "\r\n");
       folder.file("send_emails.ps1", ps);
       folder.file("Send_Emails.bat", BAT);
       folder.file("README.txt", [
-        "Vendor Balance Confirmation - Outlook mail package", "",
+        `Balance Confirmation - Outlook mail package${reminder ? " (reminders)" : ""}`, "",
         label, `Emails: ${list.length}`, `Action: ${action === "Draft" ? "Save to Outlook Drafts" : "Send immediately"}`, "",
         "1. Extract this whole ZIP to a folder (right-click > Extract All).",
         "2. Make sure the Outlook desktop app is open and signed in.",
@@ -1157,29 +1356,30 @@ async function buildPackage(lettersOnly, list) {
     const blob = await zip.generateAsync({type: "blob", compression: "DEFLATE"}, md => setProgress_(0.8 + md.percent / 500, "Building ZIP…"));
     const name = (lettersOnly ? root.replace("BalanceConfirmation_", "Letters_") : root) + ".zip";
     download(blob, name);
-    setProgress_(1, `Done: ${list.length} letter(s) in ${name}${lettersOnly ? "" : " — extract it and run Send_Emails.bat"}`);
+    if (!lettersOnly && !test) { if (reminder) trackReminders(list); else trackSent(list, "Mail package (ZIP)"); }
+    setProgress_(1, `Done: ${list.length} ${reminder ? "reminder" : "letter"}(s) in ${name}${lettersOnly ? "" : " — extract it and run Send_Emails.bat"}`);
   } catch (e) {
     setProgress_(null); alert("Could not create the ZIP: " + e.message);
   } finally {
-    $("#dlZip").disabled = $("#dlPdf").disabled = false; renderSelection();
+    $("#dlZip").disabled = $("#dlPdf").disabled = $("#remPkg").disabled = false; if (rows.length) renderSelection();
   }
 }
 
 // ------------------------------------------------------------------ download letters in one go
 const SCOPES = {
-  ticked: ["Ticked vendors", () => rows.filter(r => r.send)],
-  balance: ["All vendors with balance ≥ minimum", () => rows.filter(r => Math.abs(r.net) >= minBal())],
-  all: ["All vendors", () => rows]
+  ticked: ["Ticked {ps}", () => rows.filter(r => r.send)],
+  balance: ["All {ps} with balance ≥ minimum", () => rows.filter(r => Math.abs(r.net) >= minBal())],
+  all: ["All {ps}", () => rows]
 };
 const scopeRows = () => SCOPES[$("#dlScope").value || "ticked"][1]();
 function renderScope() {
   const s = $("#dlScope"), v = s.value || "ticked";
-  s.innerHTML = Object.entries(SCOPES).map(([k, [l, f]]) => `<option value="${k}">${l} (${f().length.toLocaleString("en-IN")})</option>`).join("");
+  s.innerHTML = Object.entries(SCOPES).map(([k, [l, f]]) => `<option value="${k}">${partyText(l)} (${f().length.toLocaleString("en-IN")})</option>`).join("");
   s.value = v;
 }
 async function downloadLettersPdf() {
   const list = scopeRows();
-  if (!list.length) { alert("No vendors in this selection."); return; }
+  if (!list.length) { alert(`No ${M().ps} in this selection.`); return; }
   const set = (f, t) => setProgress(f, t, "#dlProg", "#dlProgText");
   $("#dlPdf").disabled = $("#dlZip").disabled = true;
   try {
@@ -1190,7 +1390,7 @@ async function downloadLettersPdf() {
       if (i % 10 === 0) { set(i / list.length, `Creating letters… ${i + 1} / ${list.length}`); await tick(); }
     }
     doc.setProperties({title: `Balance Confirmations as at ${dmy(asAt)}`, author: cfg.company_name});
-    const name = `Balance_Confirmations_${ymd(asAt)}_${list.length}_vendors.pdf`;
+    const name = `Balance_Confirmations_${ymd(asAt)}_${list.length}_${M().ps}.pdf`;
     download(doc.output("blob"), name);
     set(1, `Done: ${list.length} letter(s) in ${name}`);
   } catch (e) {
@@ -1248,66 +1448,119 @@ function renderConn() {
   $("#connBox").innerHTML = html;
   $("#accList").innerHTML = conn.accounts.map(a => `<option value="${esc(a)}">`).join("");
   $("#openOne").disabled = !conn.ok;
+  renderRemButtons();
 }
-function mailPayload(r, action) {
+function mailPayload(r, action, reminder = false) {
   const test = $("#testTo").value.trim();
-  return Object.assign(mailFor(r), {
-    from: $("#fromAcc").value.trim(), action, filename: `BC_${r.code}_${safeName(r.name)}.pdf`,
+  return Object.assign(mailFor(r, reminder), {
+    from: $("#fromAcc").value.trim(), action, filename: letterName(r),
     pdf: makeLetter(r).output("datauristring").split(",").pop(),
-    as_at: $("#asAt").value, vendor_code: r.code, vendor_name: r.name, net: r.net.toFixed(2), mode: test ? "TEST" : "LIVE"
+    as_at: ymd(rowAsAt(r)), vendor_code: r.code, vendor_name: r.name, net: r.net.toFixed(2), mode: test ? "TEST" : "LIVE"
   });
 }
 const ACTION_WORDS = {Send: ["Send", "send"], Draft: ["Save to Drafts", "save to Drafts"], Display: ["Open", "open in Outlook"]};
 async function sendDirect() {
   const list = selectedRows();
   if (!list.length || !sendFieldsOk()) return;
-  const action = $("#action").value, delay = Math.max(parseFloat($("#delay").value) || 0, 0);
-  sending = true; stopReq = false; sendLog = [];
   $("#stopSend").classList.remove("hidden"); $("#results").classList.remove("hidden"); $("#resBody").innerHTML = "";
+  await runConnector(list, false, (i, r, p, status, error) => $("#resBody").insertAdjacentHTML("beforeend",
+    `<tr><td>${i + 1}</td><td>${esc(r.code)}</td><td>${esc(r.name)}</td><td>${esc(p ? p.to : "")}</td>
+     <td class="${status === "Failed" ? "st-bad" : "st-ok"}">${esc(status)}</td><td>${esc(error)}</td></tr>`));
+  $("#confirm").checked = false; $("#stopSend").classList.add("hidden");
   renderSelection();
+}
+// Sends letters (or reminders) one by one through the Outlook Connector; successful live mails go into the tracker.
+async function runConnector(list, reminder, onRow) {
+  const action = $("#action").value, delay = Math.max(parseFloat($("#delay").value) || 0, 0), live = !$("#testTo").value.trim();
+  const prog = (f, t) => reminder ? setProgress(f, t, "#remProg", "#remText") : setProgress(f, t);
+  sending = true; stopReq = false; sendLog = [];
+  if (rows.length) renderSelection();
+  const ok = [];
   for (let i = 0; i < list.length && !stopReq; i++) {
     const r = list[i];
-    setProgress(i / list.length, `${i + 1} / ${list.length} · ${r.name}`);
+    prog(i / list.length, `${i + 1} / ${list.length} · ${r.name}`);
     let p = null, status, error = "";
-    try { p = mailPayload(r, action); status = (await api("/send", p)).status; }
+    try { p = mailPayload(r, action, reminder); status = (await api("/send", p)).status; }
     catch (e) {
       status = "Failed"; error = e.message;
       if (!e.http) { error = "Lost connection to the Outlook Connector – is its window still open?"; stopReq = true; connLost(); }
     }
-    sendLog.push({timestamp: new Date().toLocaleString("en-IN"), as_at: $("#asAt").value, vendor_code: r.code, vendor_name: r.name,
-                  net: r.net, to: p ? p.to : "", cc: p ? p.cc : "", mode: p ? p.mode : "", action, status, error});
-    $("#resBody").insertAdjacentHTML("beforeend", `<tr><td>${i + 1}</td><td>${esc(r.code)}</td><td>${esc(r.name)}</td><td>${esc(p ? p.to : "")}</td>
-      <td class="${status === "Failed" ? "st-bad" : "st-ok"}">${esc(status)}</td><td>${esc(error)}</td></tr>`);
+    if (status !== "Failed") ok.push(r);
+    sendLog.push({timestamp: new Date().toLocaleString("en-IN"), as_at: ymd(rowAsAt(r)), code: r.code, name: r.name,
+                  net: r.net, to: p ? p.to : "", cc: p ? p.cc : "", mode: p ? p.mode : "", type: reminder ? "Reminder" : "Letter", action, status, error});
+    if (onRow) onRow(i, r, p, status, error);
     if (delay && i < list.length - 1 && !stopReq) await new Promise(res => setTimeout(res, delay * 1000));
   }
+  if (live && ok.length) { if (reminder) trackReminders(ok); else trackSent(ok, "Outlook Connector – " + ACTION_WORDS[action][0]); }
   const failed = sendLog.filter(l => l.status === "Failed").length, done = sendLog.length - failed;
   const skipped = list.length - sendLog.length;
   const summary = `Done: ${done} OK, ${failed} failed${skipped ? `, ${skipped} not attempted (stopped)` : ""}.`;
-  setProgress(sendLog.length / list.length, summary + " The connector also saved the letters and sent_log.csv in its output folder.");
-  $("#resSummary").textContent = summary;
-  sending = false; $("#confirm").checked = false; $("#stopSend").classList.add("hidden");
-  renderSelection();
+  prog(sendLog.length / list.length, summary + (reminder ? "" : " The connector also saved the letters and sent_log.csv in its output folder."));
+  if (!reminder) $("#resSummary").textContent = summary;
+  sending = false;
+  return summary;
 }
 
 // ------------------------------------------------------------------ settings form
 function renderSettings() {
-  $("#settings").innerHTML = SETTING_FIELDS.map(([k, label, kind = ""]) => {
+  const form = fields => fields.map(([k, label, kind = ""]) => {
     const v = k === "address_lines" ? cfg[k].join("\n") : cfg[k];
     const input = kind.includes("area")
-      ? `<textarea data-s="${k}" rows="${k === "email_body" ? 7 : 3}">${esc(v)}</textarea>`
+      ? `<textarea data-s="${k}" rows="${/body/.test(k) ? 7 : 3}">${esc(v)}</textarea>`
       : `<input type="text" data-s="${k}" value="${esc(v)}">`;
     return `<label class="f${kind.includes("wide") ? " wide" : ""}">${label}${input}</label>`;
   }).join("");
+  $("#settings").innerHTML = form(SETTING_FIELDS);
+  $("#settingsSign").innerHTML = form(SIGN_FIELDS);
+  $("#settingsRem").innerHTML = form(REM_FIELDS);
 }
-$("#settings").addEventListener("input", e => {
+["#settings", "#settingsSign", "#settingsRem"].forEach(id => $(id).addEventListener("input", e => {
   const k = e.target.dataset.s; if (!k) return;
   cfg[k] = k === "address_lines" ? e.target.value.split("\n").map(s => s.trim()).filter(Boolean) : e.target.value;
   lsSet(LS_SETTINGS, cfg); schedulePreview();
-});
+}));
 $("#resetSettings").addEventListener("click", () => {
-  if (!confirm("Reset letter and email wording to the defaults?")) return;
+  if (!confirm("Reset letter, email and reminder wording to the defaults?")) return;
   cfg = Object.assign({}, DEFAULTS); lsDel(LS_SETTINGS); renderSettings(); schedulePreview();
 });
+
+// ------------------------------------------------------------------ letterhead & signature images
+// Images are scaled down and stored as PNG so the letter PDFs and browser storage stay small.
+function loadImage(file, maxSide) {
+  return new Promise((resolve, reject) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const s = Math.min(1, maxSide / Math.max(img.width, img.height));
+      const c = document.createElement("canvas"); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); resolve({src: c.toDataURL("image/png"), w: c.width, h: c.height});
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("This file is not a readable PNG or JPG image.")); };
+    img.src = url;
+  });
+}
+function renderImages() {
+  $("#lhOn").checked = !!images.lh;
+  for (const [k, prev, clear, drop] of [["logo", "#prevLogo", "#clearLogo", "#dropLogo"], ["sign", "#prevSign", "#clearSign", "#dropSign"]]) {
+    const has = !!images[k];
+    $(prev).classList.toggle("hidden", !has); if (has) $(prev).src = images[k].src;
+    $(clear).classList.toggle("hidden", !has); $(drop).classList.toggle("done", has);
+  }
+}
+function saveImages() {
+  try { localStorage.setItem(LS_IMAGES, JSON.stringify(images)); }
+  catch (e) { alert("The image is too large to remember in this browser. Please use a smaller image."); }
+  renderImages(); schedulePreview();
+}
+$("#lhOn").addEventListener("change", e => { images.lh = e.target.checked; saveImages(); });
+[["#fileLogo", "logo", 700], ["#fileSign", "sign", 600]].forEach(([id, k, max]) => $(id).addEventListener("change", async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try { images[k] = await loadImage(f, max); if (k === "logo") images.lh = true; saveImages(); }
+  catch (err) { alert(err.message); }
+  e.target.value = "";
+}));
+$("#clearLogo").addEventListener("click", () => { delete images.logo; saveImages(); });
+$("#clearSign").addEventListener("click", () => { delete images.sign; saveImages(); });
 
 // ------------------------------------------------------------------ events
 function showMsg(html, cls = "err") { $("#loadMsg").innerHTML = html ? `<div class="alert ${cls}">${html}</div>` : ""; }
@@ -1322,24 +1575,46 @@ async function onDump(which, input, dropId) {
   try {
     showMsg("Reading " + esc(f.name) + "…", "info"); await tick();
     const data = await readDump(f);
-    if (which === "adv") adv = data; else cred = data;
-    markDrop(dropId, f); showMsg("");
-    if (adv && cred) { buildRows(); renderAll(); }
-    else showMsg("Now upload the " + (adv ? "Creditor" : "Advance to Vendor") + " dump. You can add the vendor master later.", "info");
-  } catch (e) { if (which === "adv") adv = null; else cred = null; showMsg(esc(e.message)); }
+    if (which === "a") dumpA = data; else dumpB = data;
+    markDrop(dropId, f);
+    const used = [dumpA, dumpB].filter(Boolean).map(d => `${d.length.toLocaleString("en-IN")} rows read – ${esc(d.cols)}`).join("<br>");
+    if (dumpA && (dumpB || M().b.optional)) { buildRows(); renderAll(); showMsg(used, "info"); }
+    else showMsg(`${used}<br>Now upload the ${(dumpA ? M().b : M().a).label.replace(" (SAP)", "")} file. You can add the ${M().p} master later.`, "info");
+  } catch (e) { if (which === "a") dumpA = null; else dumpB = null; showMsg(esc(e.message)); }
 }
-$("#fileAdv").addEventListener("change", e => onDump("adv", e.target, "#dropAdv"));
-$("#fileCred").addEventListener("change", e => onDump("cred", e.target, "#dropCred"));
+$("#fileA").addEventListener("change", e => onDump("a", e.target, "#dropA"));
+$("#fileB").addEventListener("change", e => onDump("b", e.target, "#dropB"));
+
+// ------------------------------------------------------------------ vendors / customers
+const partyText = t => t.replace(/\{P\}/g, M().P).replace(/\{ps\}/g, M().ps).replace(/\{p\}/g, M().p);
+function applyMode() {
+  document.querySelectorAll("#modeSwitch button").forEach(b => b.classList.toggle("on", b.dataset.mode === mode));
+  document.querySelectorAll("[data-t]").forEach(el => { el.textContent = partyText(el.dataset.t); });
+  $("#lblA").textContent = M().a.label;
+  $("#lblB").textContent = M().b.label + (M().b.optional ? " – optional" : "");
+  $("#lblBsub").textContent = M().b.optional ? "Only if advances are in a separate dump" : "Excel, header in row 1";
+  $("#thA").textContent = M().a.col; $("#thB").textContent = M().b.col;
+}
+$("#modeSwitch").addEventListener("click", e => {
+  const b = e.target.closest("[data-mode]"); if (!b || b.dataset.mode === mode || sending) return;
+  mode = b.dataset.mode; savePrefs();
+  // each mode has its own dumps and master; start step 1 afresh
+  dumpA = dumpB = null; rows = []; filter = "All"; master = lsGet(M().master);
+  ["#fileA", "#fileB", "#fileMaster"].forEach(id => $(id).value = "");
+  ["#dropA", "#dropB", "#dropMaster"].forEach(id => markDrop(id, null));
+  ["#step2", "#step3", "#stepDl", "#step4"].forEach(s => $(s).classList.add("hidden"));
+  showMsg(""); applyMode(); refreshMasterNote(); trkAsAtSel = ""; renderTracker();
+});
 $("#fileMaster").addEventListener("change", async e => {
   const f = e.target.files[0]; if (!f) return;
   try {
-    master = await readMaster(f); lsSet(LS_MASTER, master); markDrop("#dropMaster", f); refreshMasterNote(); showMsg("");
+    master = await readMaster(f); lsSet(M().master, master); markDrop("#dropMaster", f); refreshMasterNote(); showMsg("");
     if (rows.length) { applyMaster(); resetSend(); renderAll(); }
   } catch (err) { showMsg(esc(err.message)); }
 });
 $("#clearMaster").addEventListener("click", () => {
-  if (!confirm("Forget the vendor master saved in this browser?")) return;
-  master = null; lsDel(LS_MASTER); $("#fileMaster").value = ""; markDrop("#dropMaster", null); refreshMasterNote();
+  if (!confirm(`Forget the ${M().p} master saved in this browser?`)) return;
+  master = null; lsDel(M().master); $("#fileMaster").value = ""; markDrop("#dropMaster", null); refreshMasterNote();
 });
 $("#filters").addEventListener("click", e => { const f = e.target.closest("[data-f]"); if (!f) return; filter = f.dataset.f; renderFilters(); renderTable(); });
 $("#search").addEventListener("input", renderTable);
@@ -1350,25 +1625,35 @@ $("#tbody").addEventListener("change", e => {
   if (k === "send") r.send = e.target.checked;
   else {
     r[k] = normEmails(e.target.value); e.target.value = r[k];
-    if (k === "email") { e.target.classList.toggle("bad", !validEmails(r.email)); if (validEmails(r.email) && Math.abs(r.net) >= minBal()) { r.send = true; tr.querySelector("[data-k=send]").checked = true; } }
-    master = master || {}; master[r.code] = {email: r.email, cc: r.cc}; lsSet(LS_MASTER, master); refreshMasterNote();
+    tr.querySelector("[data-k=email]").outerHTML = emailCell(r, "email");
+    tr.querySelector("[data-k=cc]").outerHTML = emailCell(r, "cc");
+    if (!mailOk(r)) { r.send = false; tr.querySelector("[data-k=send]").checked = false; }
+    else if (k === "email" && Math.abs(r.net) >= minBal()) { r.send = true; tr.querySelector("[data-k=send]").checked = true; }
+    master = master || {}; master[r.code] = {email: r.email, cc: r.cc}; lsSet(M().master, master); refreshMasterNote();
     renderMetrics();
   }
   renderFilters(); renderSelection();
 });
 $("#minBal").addEventListener("change", () => { if (!rows.length) return; resetSend(); renderFilters(); renderTable(); renderSelection(); });
 ["#asAt", "#letterDate"].forEach(id => $(id).addEventListener("change", () => { savePrefs(); schedulePreview(); }));
-["#testTo", "#fromAcc", "#action", "#delay"].forEach(id => $(id).addEventListener("input", () => { savePrefs(); if (rows.length) renderSelection(); }));
+["#testTo", "#fromAcc", "#action", "#delay"].forEach(id => $(id).addEventListener("input", () => { savePrefs(); if (rows.length) renderSelection(); renderRemButtons(); }));
 $("#confirm").addEventListener("change", renderSelection);
 $("#pick").addEventListener("change", renderPreview);
 $("#dlOne").addEventListener("click", () => {
   const r = rows.find(x => x.code === $("#pick").value); if (r) makeLetter(r).save(`BC_${r.code}_${safeName(r.name)}.pdf`);
 });
-$("#dlMaster").addEventListener("click", () => writeXlsx(rows.map(r => ({"Vendor Code": r.code, "Vendor Name": r.name, "Email": r.email, "CC": r.cc})), "vendor_master.xlsx"));
+$("#dlMaster").addEventListener("click", () => writeXlsx(rows.map(r => ({[M().P + " Code"]: r.code, [M().P + " Name"]: r.name, "Email": r.email, "CC": r.cc})), `${M().p}_master.xlsx`));
 $("#dlBal").addEventListener("click", () => writeXlsx(rows.map(r => ({
-  "Vendor Code": r.code, "Vendor Name": r.name, "Advance": r.advance, "Creditor": r.creditor, "Net": r.net,
-  "Nature": r.net > 0 ? "Debit (due from vendor)" : r.net < 0 ? "Credit (payable to vendor)" : "Nil", "Email": r.email, "CC": r.cc, "Send": r.send ? "Yes" : ""
-})), `balances_${$("#asAt").value.replace(/-/g, "")}.xlsx`));
+  [M().P + " Code"]: r.code, [M().P + " Name"]: r.name, [M().a.col]: r.a, [M().b.col]: r.b, "Net": r.net,
+  "Nature": r.net > 0 ? M().drLong : r.net < 0 ? M().crLong : "Nil", "Email": r.email, "CC": r.cc,
+  "Email check": (emailIssue(r) || {}).text || "OK", "Send": r.send ? "Yes" : ""
+})), `${M().p}_balances_${$("#asAt").value.replace(/-/g, "")}.xlsx`));
+$("#emailCheck").addEventListener("click", e => {
+  if (e.target.id !== "dlIssues") return;
+  const list = rows.filter(r => Math.abs(r.net) >= minBal() && emailIssue(r));
+  writeXlsx(list.map(r => ({[M().P + " Code"]: r.code, [M().P + " Name"]: r.name, "Net": r.net, "Email": r.email, "CC": r.cc, "Problem": emailIssue(r).text})),
+            `${M().p}_email_issues.xlsx`);
+});
 $("#makePkg").addEventListener("click", () => buildPackage(false, selectedRows()));
 $("#dlZip").addEventListener("click", () => buildPackage(true, scopeRows()));
 $("#dlPdf").addEventListener("click", downloadLettersPdf);
@@ -1378,12 +1663,13 @@ $("#dlLog").addEventListener("click", () => writeXlsx(sendLog, `send_log_${ymd(n
 $("#openOne").addEventListener("click", async () => {
   const r = rows.find(x => x.code === $("#pick").value);
   if (!r || !sendFieldsOk()) return;
-  try { await api("/send", mailPayload(r, "Display")); }
+  try { await api("/send", mailPayload(r, "Display")); trackOne(r, "Outlook Connector – Open"); }
   catch (e) { if (!e.http) connLost(); alert("Could not open the mail in Outlook: " + (e.http ? e.message : "the Outlook Connector is not running.")); }
 });
 // ---- Email this vendor: share sheet / mailto / Outlook draft (.eml)
 const pickedRow = () => rows.find(x => x.code === $("#pick").value);
-const letterName = r => `BC_${r.code}_${safeName(r.name)}.pdf`;
+// single-vendor mails count as sent once handed to the mail app (live mode only)
+const trackOne = (r, via) => { if (!$("#testTo").value.trim()) trackSent([r], via); };
 function htmlToText(html) {
   const d = new DOMParser().parseFromString(html.replace(/<br\s*\/?>/gi, "\n").replace(/<\/p>/gi, "\n\n"), "text/html");
   return d.body.textContent.replace(/\n{3,}/g, "\n\n").trim();
@@ -1399,6 +1685,7 @@ $("#shareFile").addEventListener("click", async () => {
   const copied = m.to && await copyText(m.to);
   try {
     await navigator.share({files: [file], title: m.subject, text: htmlToText(m.body)});
+    trackOne(r, "Windows share");
     shareMsg((copied ? `Shared. The recipient (${m.to}) was copied – paste it into the To box.` : "Shared.") +
       " If Outlook says the file is empty (no_name), use “New Outlook” instead.");
   } catch (e) { if (e.name !== "AbortError") shareMsg("Could not share: " + e.message); }
@@ -1421,6 +1708,7 @@ $("#shareNew").addEventListener("click", () => {
   const name = letterName(r);
   location.href = mailtoFor(mailFor(r));
   setTimeout(() => download(makeLetter(r).output("blob"), name), 300);
+  trackOne(r, "New Outlook");
   shareMsg(`Mail opened in Outlook with To, subject and text filled in. ${name} was saved – drag it from the browser's downloads (Ctrl+J) into the mail, then Send.`);
 });
 $("#shareEml").addEventListener("click", () => {
@@ -1439,6 +1727,7 @@ $("#shareEml").addEventListener("click", () => {
     "Content-Transfer-Encoding: base64", "", wrap(makeLetter(r).output("datauristring").split(",").pop()), `--${B}--`, ""
   ].filter(l => l !== null).join("\r\n");
   download(new Blob([eml], {type: "message/rfc822"}), name.replace(/\.pdf$/, ".eml"));
+  trackOne(r, "Classic Outlook draft");
   shareMsg("Downloaded an Outlook draft – open it from the browser's downloads (Ctrl+J); classic Outlook opens it with the letter attached, ready to Send. " +
     "If it opens in New Outlook or read-only: right-click the .eml file → Open with → Choose another app → Outlook (classic) → Always.");
 });
@@ -1454,7 +1743,190 @@ $("#connBox").addEventListener("keydown", e => { if (e.target.id === "connCode" 
 window.addEventListener("focus", () => { if (!conn.running && !sending) checkConnector(); });
 setInterval(() => { if (!conn.running && !sending && !document.hidden) checkConnector(); }, 5000);
 
-function savePrefs() { lsSet(LS_PREFS, {asAt: $("#asAt").value, fromAcc: $("#fromAcc").value, action: $("#action").value, delay: $("#delay").value}); }
+// ------------------------------------------------------------------ tracker: replies & reminders
+// One record per party per balance date: {mode, asAt, code, name, net, email, cc, letterDate, sentOn, via,
+// status: Sent | Confirmed | Difference | Bounced, replyOn, theirBal, remarks, reminders: [dates]}
+let track = lsGet(LS_TRACK) || {};
+let trkAsAtSel = "", trkFilter = "All";
+const trkSel = new Set();
+const STATUSES = ["Sent", "Confirmed", "Difference", "Bounced"];
+const STATUS_LABEL = {Sent: "Awaiting reply", Confirmed: "Confirmed", Difference: "Confirmed with difference", Bounced: "Bounced / wrong email"};
+const trkKey = (m, asAt, code) => `${m}|${asAt}|${code}`;
+const todayYmd = () => ymd(new Date());
+const daysSince = d => Math.floor((parseDate(todayYmd()) - parseDate(d)) / 86400000);
+const lastContact = t => t.reminders.length ? t.reminders[t.reminders.length - 1] : t.sentOn;
+const remDays = () => Math.max(parseInt($("#remDays").value, 10) || 7, 1);
+const reminderDue = t => t.status === "Sent" && daysSince(lastContact(t)) >= remDays();
+function saveTrack() {
+  try { localStorage.setItem(LS_TRACK, JSON.stringify(track)); }
+  catch (e) { alert("Could not save the tracker in this browser (storage full?). Download a Backup now."); }
+}
+function trackSent(list, via) {
+  const asAt = $("#asAt").value, letterDate = $("#letterDate").value, today = todayYmd();
+  for (const r of list) {
+    const k = trkKey(r.mode || mode, r.asAt || asAt, r.code), t = track[k];
+    const base = {name: r.name, net: r.net, email: r.email, cc: r.cc, letterDate: r.letterDate || letterDate, via};
+    if (t) {
+      Object.assign(t, base);
+      if (t.status === "Bounced") { t.status = "Sent"; t.sentOn = today; }   // re-sent after fixing the email
+    } else {
+      track[k] = {mode: r.mode || mode, asAt: r.asAt || asAt, code: r.code, ...base, sentOn: today,
+                  status: "Sent", replyOn: "", theirBal: "", remarks: "", reminders: []};
+    }
+  }
+  saveTrack(); trkAsAtSel = list[0].asAt || asAt; renderTracker();
+}
+function trackReminders(list) {
+  const today = todayYmd();
+  for (const r of list) { const t = track[trkKey(r.mode, r.asAt, r.code)]; if (t) t.reminders.push(today); }
+  saveTrack(); renderTracker();
+}
+const trkRecords = () => Object.entries(track).filter(([, t]) => t.mode === mode);
+const TRK_FILTERS = {
+  "All": () => true,
+  "Awaiting reply": t => t.status === "Sent",
+  "Reminder due": reminderDue,
+  "Confirmed": t => t.status === "Confirmed",
+  "Difference": t => t.status === "Difference",
+  "Bounced": t => t.status === "Bounced"
+};
+function trkPeriod() {
+  return trkRecords().filter(([, t]) => t.asAt === trkAsAtSel);
+}
+function trkView() {
+  const q = $("#trkSearch").value.trim().toLowerCase();
+  return trkPeriod().filter(([, t]) => TRK_FILTERS[trkFilter](t))
+    .filter(([, t]) => !q || (t.code + " " + t.name + " " + t.email).toLowerCase().includes(q))
+    .sort((a, b) => a[1].code.localeCompare(b[1].code, undefined, {numeric: true}));
+}
+// ticked rows that can get a reminder (still awaiting a reply, valid email)
+const remList = () => trkPeriod().filter(([k, t]) => trkSel.has(k) && t.status === "Sent" && validEmails(t.email)).map(([, t]) => t);
+function renderTracker() {
+  const recs = trkRecords();
+  const periods = [...new Set(recs.map(([, t]) => t.asAt))].sort().reverse();
+  if (!periods.includes(trkAsAtSel)) trkAsAtSel = periods.includes($("#asAt").value) ? $("#asAt").value : (periods[0] || "");
+  $("#trkAsAt").innerHTML = periods.map(p => `<option value="${p}">${dmy(parseDate(p))}</option>`).join("") || `<option value="">—</option>`;
+  $("#trkAsAt").value = trkAsAtSel;
+  $("#trkEmpty").classList.toggle("hidden", recs.length > 0);
+  $("#trkMain").classList.toggle("hidden", !recs.length);
+  if (recs.length) $("#step4").classList.remove("hidden");   // connector & send settings are needed for reminders
+  if (!recs.length) return;
+
+  const all = trkPeriod().map(([, t]) => t), val = list => list.reduce((a, t) => a + Math.abs(t.net), 0);
+  const conf = all.filter(t => t.status === "Confirmed"), diff = all.filter(t => t.status === "Difference");
+  const wait = all.filter(t => t.status === "Sent"), due = all.filter(reminderDue), bounced = all.filter(t => t.status === "Bounced");
+  const pct = (a, b) => b ? ` · ${(a / b * 100).toFixed(1)}%` : "";
+  const m = [
+    ["Letters sent", `${all.length} · ₹ ${inr(val(all))}`],
+    ["Confirmed (by value)", `${conf.length}${pct(val(conf), val(all))}`],
+    ["Confirmed with difference", `${diff.length}${pct(val(diff), val(all))}`],
+    ["Awaiting reply / reminder due", `${wait.length} / ${due.length}`],
+    ["Bounced", String(bounced.length)]
+  ];
+  $("#trkMetrics").innerHTML = m.map(([k, v]) => `<div class="metric"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+  $("#trkFilters").innerHTML = Object.keys(TRK_FILTERS).map(f =>
+    `<button class="chip${f === trkFilter ? " on" : ""}" data-f="${esc(f)}" type="button">${esc(f)} (${all.filter(TRK_FILTERS[f]).length})</button>`).join("");
+
+  const v = trkView();
+  $("#trkBody").innerHTML = v.map(([k, t]) => {
+    const days = daysSince(t.sentOn), n = t.reminders.length;
+    return `<tr data-k="${esc(k)}"${reminderDue(t) ? ' class="overdue" title="Reminder due"' : ""}>
+      <td><input type="checkbox" data-a="sel"${trkSel.has(k) ? " checked" : ""}></td>
+      <td>${esc(t.code)}</td><td class="name">${esc(t.name)}</td><td class="num">${drcr(t.net)}</td>
+      <td><input type="text" data-a="email" value="${esc(t.email)}"${validEmails(t.email) ? "" : ' class="bad"'}></td>
+      <td>${dmy(parseDate(t.sentOn))}<br><small class="note">${esc(t.via || "")}</small></td>
+      <td class="num">${days}</td>
+      <td>${n ? `${n} (last ${dmy(parseDate(t.reminders[n - 1]))})` : "—"}</td>
+      <td><select data-a="status">${STATUSES.map(s => `<option value="${s}"${s === t.status ? " selected" : ""}>${STATUS_LABEL[s]}</option>`).join("")}</select></td>
+      <td><input type="date" data-a="replyOn" value="${esc(t.replyOn)}"></td>
+      <td><input type="text" class="narrow" data-a="theirBal" value="${esc(t.theirBal)}" placeholder="if different"></td>
+      <td><input type="text" data-a="remarks" value="${esc(t.remarks)}"></td>
+      <td><button class="btn link" data-a="del" type="button" title="Remove this record">✕</button></td></tr>`;
+  }).join("") || `<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:20px">Nothing matches.</td></tr>`;
+  $("#trkAll").checked = v.length > 0 && v.every(([k]) => trkSel.has(k));
+  renderRemButtons();
+}
+function renderRemButtons() {
+  const n = remList().length, test = $("#testTo").value.trim();
+  $("#remSend").textContent = `🔔 Send reminder to ${n} ticked${test ? " (TEST mode)" : ""}`;
+  $("#remSend").disabled = !n || !conn.ok || sending;
+  $("#remSend").title = conn.ok ? "" : "Needs the Outlook Connector (see step 4)";
+  $("#remPkg").disabled = !n;
+}
+$("#trkAsAt").addEventListener("change", e => { trkAsAtSel = e.target.value; trkSel.clear(); renderTracker(); });
+$("#remDays").addEventListener("change", () => { savePrefs(); renderTracker(); });
+$("#trkSearch").addEventListener("input", renderTracker);
+$("#trkFilters").addEventListener("click", e => { const f = e.target.closest("[data-f]"); if (!f) return; trkFilter = f.dataset.f; renderTracker(); });
+$("#trkAll").addEventListener("change", e => { trkView().forEach(([k]) => e.target.checked ? trkSel.add(k) : trkSel.delete(k)); renderTracker(); });
+$("#trkBody").addEventListener("change", e => {
+  const tr = e.target.closest("tr[data-k]"); if (!tr) return;
+  const k = tr.dataset.k, t = track[k], a = e.target.dataset.a;
+  if (a === "sel") { e.target.checked ? trkSel.add(k) : trkSel.delete(k); renderRemButtons(); return; }
+  if (a === "email") t.email = normEmails(e.target.value);
+  else t[a] = e.target.value;
+  if (a === "status" && (t.status === "Confirmed" || t.status === "Difference") && !t.replyOn) t.replyOn = todayYmd();
+  saveTrack(); renderTracker();
+});
+$("#trkBody").addEventListener("click", e => {
+  if (e.target.dataset.a !== "del") return;
+  const k = e.target.closest("tr[data-k]").dataset.k, t = track[k];
+  if (!confirm(`Remove ${t.code} – ${t.name} from the tracker?`)) return;
+  delete track[k]; trkSel.delete(k); saveTrack(); renderTracker();
+});
+$("#remSend").addEventListener("click", async () => {
+  const list = remList(); if (!list.length || !sendFieldsOk()) return;
+  const test = $("#testTo").value.trim(), [label] = ACTION_WORDS[$("#action").value] || ACTION_WORDS.Draft;
+  if (!confirm(`${label}: ${list.length} reminder(s) via Outlook?\n${test ? "TEST mode – all go to " + test : "LIVE mode – they go to the " + M().ps}.`)) return;
+  await runConnector(list, true);
+  if (rows.length) renderSelection();
+  renderTracker();
+});
+$("#remPkg").addEventListener("click", () => buildPackage(false, remList(), true));
+$("#trkXlsx").addEventListener("click", () => {
+  const all = trkPeriod().map(([, t]) => t).sort((a, b) => a.code.localeCompare(b.code, undefined, {numeric: true}));
+  const P = M().P, asAt = dmy(parseDate(trkAsAtSel)), val = l => round2(l.reduce((a, t) => a + Math.abs(t.net), 0));
+  const by = s => all.filter(t => t.status === s), totVal = val(all);
+  const line = (k, l) => ({"Item": k, "Count": l.length, "Amount (₹)": val(l), "% of value": totVal ? round2(val(l) / totVal * 100) : 0});
+  const summary = [
+    {"Item": `${P} balance confirmation status as at ${asAt}`}, {"Item": `${cfg.company_name} · report date ${dmy(new Date())}`}, {},
+    line("Letters sent", all), line("Confirmed", by("Confirmed")), line("Confirmed with difference", by("Difference")),
+    line("Awaiting reply", by("Sent")), line("Bounced / wrong email", by("Bounced")),
+    {"Item": "Reminders sent", "Count": all.reduce((a, t) => a + t.reminders.length, 0)}
+  ];
+  const details = all.map(t => {
+    const theirs = String(t.theirBal).trim() === "" ? "" : toNum(t.theirBal);
+    return {
+      [P + " Code"]: t.code, [P + " Name"]: t.name, "Balance as at": asAt, "Balance as per our books (₹)": Math.abs(t.net),
+      "Dr / Cr": t.net > 0 ? "Dr" : t.net < 0 ? "Cr" : "Nil", "Email": t.email, "Letter date": t.letterDate ? dmy(parseDate(t.letterDate)) : "",
+      "Sent on": dmy(parseDate(t.sentOn)), "Sent via": t.via || "", "Reminders": t.reminders.length,
+      "Last reminder": t.reminders.length ? dmy(parseDate(t.reminders[t.reminders.length - 1])) : "",
+      "Status": STATUS_LABEL[t.status], "Reply date": t.replyOn ? dmy(parseDate(t.replyOn)) : "",
+      "Balance as per party (₹)": theirs, "Difference (₹)": theirs === "" ? "" : round2(Math.abs(t.net) - theirs), "Remarks": t.remarks
+    };
+  });
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summary), "Summary");
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(details), "Details");
+  XLSX.writeFile(wb, `${M().p}_confirmation_status_${trkAsAtSel}.xlsx`);
+});
+$("#trkBackup").addEventListener("click", () => download(
+  new Blob([JSON.stringify({app: "balance-confirmation-tracker", version: 1, exported: new Date().toISOString(), track}, null, 1)], {type: "application/json"}),
+  `balance_confirmation_tracker_${todayYmd()}.json`));
+$("#trkRestore").addEventListener("change", async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  try {
+    const j = JSON.parse(await f.text());
+    if (j.app !== "balance-confirmation-tracker" || !j.track) throw new Error("This is not a tracker backup file.");
+    const n = Object.keys(j.track).length;
+    if (!confirm(`Restore ${n} record(s) from ${f.name}? Records for the same code and balance date are replaced; others are kept.`)) return;
+    Object.assign(track, j.track); saveTrack(); renderTracker();
+  } catch (err) { alert("Could not restore: " + err.message); }
+});
+
+function savePrefs() {
+  lsSet(LS_PREFS, {asAt: $("#asAt").value, fromAcc: $("#fromAcc").value, action: $("#action").value, delay: $("#delay").value,
+                   mode, remDays: $("#remDays").value});
+}
 
 // ------------------------------------------------------------------ init
 (function init() {
@@ -1465,8 +1937,9 @@ function savePrefs() { lsSet(LS_PREFS, {asAt: $("#asAt").value, fromAcc: $("#fro
   if (prefs.fromAcc) $("#fromAcc").value = prefs.fromAcc;
   if (prefs.action) $("#action").value = prefs.action;
   if (prefs.delay) $("#delay").value = prefs.delay;
+  if (prefs.remDays) $("#remDays").value = prefs.remDays;
   if (!window.XLSX || !window.jspdf || !window.JSZip) showMsg("A built-in library failed to load. Please use the full index.html file.");
-  renderSettings(); refreshMasterNote(); renderConn(); checkConnector();
+  applyMode(); renderSettings(); renderImages(); refreshMasterNote(); renderTracker(); renderConn(); checkConnector();
 })();
 
 // ------------------------------------------------------------------ install as an app (only when served over https, e.g. GitHub Pages)

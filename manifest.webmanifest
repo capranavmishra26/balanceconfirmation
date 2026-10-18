@@ -1,7 +1,7 @@
 {
-  "name": "Vendor Balance Confirmation",
+  "name": "Balance Confirmation",
   "short_name": "Balance Confirmation",
-  "description": "Create vendor balance confirmation letters from SAP dumps and send them through Outlook. Created by CA Pranav Mishra.",
+  "description": "Create vendor and customer balance confirmation letters from SAP dumps, send them through Outlook and track replies. Created by CA Pranav Mishra.",
   "id": "./",
   "start_url": "./",
   "scope": "./",

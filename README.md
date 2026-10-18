@@ -19,6 +19,14 @@ Copy **`index.html`** and **`Outlook_Connector.bat`** into one folder on any Win
   **Install app on this laptop** at the top of the page (Chrome/Edge). It then opens from the Start menu in its own
   window, works offline, and picks up new versions automatically. `manifest.webmanifest`, `sw.js` and `icon-*.png`
   must sit next to `index.html` in the repository.
+- **Vendors / Customers** switch (top right): customers use the debtor open-items dump (customer advances in a
+  separate dump are optional) and their own customer master. Dr = receivable by us, Cr = payable by us in both.
+- **Letterhead & signature** (step 3): upload the company logo and, optionally, the authorised signatory's signature.
+- **Email check** (step 2): missing or invalid emails / CCs are flagged red and not sent; likely typos (e.g. `gmial.com`)
+  are flagged amber. *Download the list* gives an Excel of problems to get corrected.
+- **Step 5 – tracker**: every letter sent in live mode is recorded. Mark replies (Confirmed / Difference / Bounced),
+  send reminders to the ticked rows after the set number of days, and download the **audit status report** (Excel).
+  The tracker lives in that browser – use **Backup / Restore** to move it to another laptop.
 - To change the app, edit `web/app.html` / `web/connector.ps1` and run `powershell -ExecutionPolicy Bypass -File web\build.ps1`.
 
 ## Requirements
