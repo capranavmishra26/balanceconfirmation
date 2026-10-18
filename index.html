@@ -158,6 +158,7 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
       <label class="f">Letter date<input type="date" id="letterDate"></label>
       <label class="f">Minimum balance (absolute, ₹)<input type="number" id="minBal" min="0" step="100" value="1"></label>
     </div>
+    <div id="savedNote" class="hidden"></div>
     <div id="loadMsg"></div>
   </section>
 
@@ -1564,7 +1565,65 @@ $("#clearSign").addEventListener("click", () => { delete images.sign; saveImages
 
 // ------------------------------------------------------------------ events
 function showMsg(html, cls = "err") { $("#loadMsg").innerHTML = html ? `<div class="alert ${cls}">${html}</div>` : ""; }
-function markDrop(id, file) { const d = $(id); d.classList.toggle("done", !!file); d.querySelector(".name").textContent = file ? "✓ " + file.name : ""; }
+function markDrop(id, file) { const d = $(id); d.classList.toggle("done", !!file); d.querySelector(".name").textContent = file ? "✓ " + (file.name || file) : ""; }
+
+// ------------------------------------------------------------------ saved SAP data (IndexedDB – too big for localStorage)
+// One record per mode: {a: {rows, cols, file, savedAt}, b: {...}}. Kept until a new file is uploaded or it is cleared.
+function idb() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open("balconf", 1);
+    r.onupgradeneeded = () => r.result.createObjectStore("dumps");
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+}
+async function idbDo(fn) {
+  const db = await idb();
+  return new Promise((res, rej) => {
+    const tx = db.transaction("dumps", "readwrite"), req = fn(tx.objectStore("dumps"));
+    tx.oncomplete = () => { db.close(); res(req && req.result); }; tx.onerror = () => { db.close(); rej(tx.error); };
+  });
+}
+async function saveDump(which, data, fileName) {
+  try {
+    const rec = (await idbDo(s => s.get(mode))) || {};
+    // stored column-wise (codes / amounts / one name per code): far quicker to save and load than 50,000 objects
+    const names = {};
+    for (const r of data) if (!(r.code in names)) names[r.code] = r.name;
+    rec[which] = {codes: data.map(r => r.code), amts: Float64Array.from(data, r => r.amt), names,
+                  cols: data.cols, file: fileName, savedAt: new Date().toISOString()};
+    await idbDo(s => s.put(rec, mode));
+  } catch (e) { console.warn("Could not save the uploaded data in this browser:", e); }
+}
+const savedLabel = s => { const d = new Date(s.savedAt); return `${s.file} (saved ${dmy(d)} ${pad(d.getHours())}:${pad(d.getMinutes())})`; };
+async function restoreDumps() {
+  const forMode = mode;
+  let rec = null;
+  try { rec = await idbDo(s => s.get(forMode)); } catch (e) { return; }
+  if (forMode !== mode || !rec || (!rec.a && !rec.b)) { renderSavedNote(null); return; }
+  const load = s => { const d = s.codes.map((code, i) => ({code, name: s.names[code], amt: s.amts[i]})); d.cols = s.cols; return d; };
+  if (rec.a) { dumpA = load(rec.a); markDrop("#dropA", savedLabel(rec.a)); }
+  if (rec.b) { dumpB = load(rec.b); markDrop("#dropB", savedLabel(rec.b)); }
+  renderSavedNote(rec);
+  if (dumpA && (dumpB || M().b.optional)) { buildRows(); renderAll(); }
+}
+function renderSavedNote(rec) {
+  const box = $("#savedNote");
+  if (!rec) { box.classList.add("hidden"); box.innerHTML = ""; return; }
+  const oldest = [rec.a, rec.b].filter(Boolean).map(s => new Date(s.savedAt)).sort((x, y) => x - y)[0];
+  const today = dmy(oldest) === dmy(new Date());
+  box.innerHTML = `<div class="alert ${today ? "info" : "warn"}">Using the SAP data saved in this browser${today ? " today" : ` on ${dmy(oldest)}`}.
+    Upload a file again only if the data has changed. <button class="btn link" id="clearData" type="button">Clear saved data</button></div>`;
+  box.classList.remove("hidden");
+}
+$("#savedNote").addEventListener("click", async e => {
+  if (e.target.id !== "clearData" || !confirm(`Clear the ${M().p} SAP data saved in this browser? You will need to upload the files again.`)) return;
+  try { await idbDo(s => s.delete(mode)); } catch (err) {}
+  dumpA = dumpB = null; rows = [];
+  ["#fileA", "#fileB"].forEach(id => $(id).value = ""); ["#dropA", "#dropB"].forEach(id => markDrop(id, null));
+  ["#step2", "#step3", "#stepDl"].forEach(s => $(s).classList.add("hidden"));
+  if (!trkRecords().length) $("#step4").classList.add("hidden");
+  renderSavedNote(null); showMsg("");
+});
 function refreshMasterNote() {
   const n = master ? Object.keys(master).length : 0;
   $("#clearMaster").classList.toggle("hidden", !n);
@@ -1576,7 +1635,8 @@ async function onDump(which, input, dropId) {
     showMsg("Reading " + esc(f.name) + "…", "info"); await tick();
     const data = await readDump(f);
     if (which === "a") dumpA = data; else dumpB = data;
-    markDrop(dropId, f);
+    markDrop(dropId, f); renderSavedNote(null);
+    saveDump(which, data, f.name);   // so the file needn't be uploaded again next time
     const used = [dumpA, dumpB].filter(Boolean).map(d => `${d.length.toLocaleString("en-IN")} rows read – ${esc(d.cols)}`).join("<br>");
     if (dumpA && (dumpB || M().b.optional)) { buildRows(); renderAll(); showMsg(used, "info"); }
     else showMsg(`${used}<br>Now upload the ${(dumpA ? M().b : M().a).label.replace(" (SAP)", "")} file. You can add the ${M().p} master later.`, "info");
@@ -1603,7 +1663,8 @@ $("#modeSwitch").addEventListener("click", e => {
   ["#fileA", "#fileB", "#fileMaster"].forEach(id => $(id).value = "");
   ["#dropA", "#dropB", "#dropMaster"].forEach(id => markDrop(id, null));
   ["#step2", "#step3", "#stepDl", "#step4"].forEach(s => $(s).classList.add("hidden"));
-  showMsg(""); applyMode(); refreshMasterNote(); trkAsAtSel = ""; renderTracker();
+  showMsg(""); renderSavedNote(null); applyMode(); refreshMasterNote(); trkAsAtSel = ""; renderTracker();
+  restoreDumps();
 });
 $("#fileMaster").addEventListener("change", async e => {
   const f = e.target.files[0]; if (!f) return;
@@ -1940,6 +2001,7 @@ function savePrefs() {
   if (prefs.remDays) $("#remDays").value = prefs.remDays;
   if (!window.XLSX || !window.jspdf || !window.JSZip) showMsg("A built-in library failed to load. Please use the full index.html file.");
   applyMode(); renderSettings(); renderImages(); refreshMasterNote(); renderTracker(); renderConn(); checkConnector();
+  restoreDumps();
 })();
 
 // ------------------------------------------------------------------ install as an app (only when served over https, e.g. GitHub Pages)
