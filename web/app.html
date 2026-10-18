@@ -84,6 +84,12 @@ tr.overdue td { background: var(--warn-soft); }
 .seg button.on { background: var(--accent); color: #fff; }
 .imgprev { max-height: 60px; max-width: 220px; object-fit: contain; background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 4px; align-self: flex-start; }
 .st-warn { color: var(--warn); font-weight: 600; }
+.recon { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 4px 16px; margin-top: 8px; font-size: 13px; }
+.recon label { display: flex; gap: 8px; align-items: baseline; }
+.recon small { color: var(--muted); margin-left: auto; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.agegrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; margin-bottom: 12px; }
+.agegrid div { border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font-size: 12px; color: var(--muted); }
+.agegrid b { display: block; color: var(--text); font-size: 13.5px; font-variant-numeric: tabular-nums; }
 .dr { color: var(--ok); } .cr { color: var(--accent); }
 .note { font-size: 12.5px; color: var(--muted); margin: 8px 0 0; }
 .alert { border-radius: 8px; padding: 10px 12px; margin: 10px 0 0; font-size: 13px; }
@@ -146,13 +152,20 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
     <h2><span class="step">1</span> Upload files &amp; period</h2>
     <div class="grid g3">
       <div class="drop" id="dropA"><label class="f"><span id="lblA"></span><small>Excel, header in row 1</small></label>
-        <input type="file" id="fileA" accept=".xlsx,.xls"><span class="name"></span></div>
+        <input type="file" id="fileA" accept=".xlsx,.xls"><span class="name"></span>
+        <button class="btn link hidden rm" type="button" data-rm="a">✕ Remove this file</button></div>
       <div class="drop" id="dropB"><label class="f"><span id="lblB"></span><small id="lblBsub"></small></label>
-        <input type="file" id="fileB" accept=".xlsx,.xls"><span class="name"></span></div>
+        <input type="file" id="fileB" accept=".xlsx,.xls"><span class="name"></span>
+        <button class="btn link hidden rm" type="button" data-rm="b">✕ Remove this file</button></div>
       <div class="drop" id="dropMaster"><label class="f"><span data-t="{P} master (optional)"></span><small data-t="Columns: {P} Code, Email, CC"></small></label>
         <input type="file" id="fileMaster" accept=".xlsx,.xls,.csv"><span class="name"></span>
         <button class="btn link hidden" id="clearMaster" type="button" data-t="Forget remembered {p} master"></button></div>
     </div>
+    <div class="drop" id="dropAg" style="margin-top:14px"><label class="f">…or upload the Vendor Ageing Report instead (SAP, one file)
+        <small>Replaces the two dumps above: advances and creditors come from one file, with ageing. Choose which reconciliation accounts to include after uploading.</small></label>
+      <input type="file" id="fileAg" accept=".xlsx,.xls"><span class="name"></span>
+      <button class="btn link hidden rm" type="button" data-rm="ag">✕ Remove this file</button></div>
+    <div id="reconBox" class="hidden"></div>
     <div class="grid g4" style="margin-top:14px">
       <label class="f">Balance as at<input type="date" id="asAt"></label>
       <label class="f">Letter date<input type="date" id="letterDate"></label>
@@ -166,6 +179,7 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
   <section class="card hidden" id="step2">
     <h2><span class="step">2</span> Review balances</h2>
     <div class="metrics" id="metrics"></div>
+    <div id="ageBox" class="hidden"></div>
     <div id="emailCheck"></div>
     <div class="row" style="justify-content:space-between">
       <div class="chips" id="filters"></div>
@@ -464,6 +478,8 @@ let dumpA = null, dumpB = null;         // parsed dump lines
 let rows = [];                          // one per party
 let filter = "All";
 let images = lsGet(LS_IMAGES) || {};    // {logo, sign: data URLs, lh: letterhead on/off}
+let ageing = null;                      // vendor ageing report lines, when used instead of the two dumps
+let reconSel = (lsGet(LS_PREFS) || {}).recon || null;   // ticked reconciliation accounts (null = default)
 
 // ------------------------------------------------------------------ reading Excel
 async function readRows(file) {
@@ -488,6 +504,77 @@ async function readDump(file) {
   out.cols = `${m.P} code = “${code}”, name = “${name}”, amount = “${amt}”`;
   return out;
 }
+// Vendor Ageing Report: one line per open item with Vendor, Name, Total, ageing buckets and Recon. Acc
+const bucketLabel = (b, prev) => {
+  const n = String(b).match(/\d+/g);
+  if (n && n.length >= 2) return `${+n[0]}–${+n[1]} days`;
+  return `Above ${prev ? (String(prev).match(/\d+/g) || []).map(Number).pop() : ""} days`.replace("  ", " ");
+};
+async function readAgeing(file) {
+  const data = await readRows(file);
+  const cols = data.length ? Object.keys(data[0]) : [];
+  const code = cols.find(c => c === "Vendor") || findCol(cols, ["vendor code", "vendor"], ["name"]);
+  const name = cols.find(c => c === "Name") || findCol(cols, ["vendor name", "name"], ["profit", "office", "plant"]);
+  const amt = cols.find(c => c === "Total") || findCol(cols, ["total", "balance"]);
+  const recon = findCol(cols, ["recon"]);
+  const buckets = cols.filter(c => /^\s*\d+\s*-\s*\d+\s*$/.test(c) || /^\s*above\b/i.test(c));
+  const missing = [[code, "Vendor"], [name, "Name"], [amt, "Total"], [recon, "Recon. Acc"]].filter(([c]) => !c).map(([, w]) => w);
+  if (missing.length) throw new Error(`${file.name}: column(s) not found: ${missing.join(", ")}. Is this the Vendor Ageing Report?`);
+  const lines = [];
+  for (const r of data) {
+    const c = cleanCode(r[code]); if (!c) continue;      // grand-total row has no vendor
+    lines.push({code: c, name: String(r[name] ?? "").trim(), amt: toNum(r[amt]), recon: String(r[recon] ?? "").trim() || "(blank)",
+                age: buckets.map(b => toNum(r[b]))});
+  }
+  lines.buckets = buckets.map((b, i) => bucketLabel(b, buckets[i - 1]));
+  lines.cols = `Vendor code = “${code}”, name = “${name}”, amount = “${amt}”, account = “${recon}”, ${buckets.length} ageing buckets`;
+  return lines;
+}
+// default = what the two dumps cover: Advance to Vendor + all Sundry Creditors accounts
+const reconDefault = a => /^advance[\s-]*vendors?$/i.test(a) || /^sundry creditors/i.test(a);
+const reconSide = a => /advance|deposit/i.test(a) ? "a" : "b";   // advances & deposits are debit-side items
+function reconSet() {
+  const all = [...new Set(ageing.map(l => l.recon))];
+  return new Set(reconSel ? all.filter(a => reconSel.includes(a)) : all.filter(reconDefault));
+}
+function applyAgeing() {
+  const sel = reconSet();
+  const pick = side => ageing.filter(l => sel.has(l.recon) && reconSide(l.recon) === side);
+  dumpA = pick("a"); dumpB = pick("b");
+  dumpA.cols = dumpB.cols = ageing.cols;
+  buildRows(); renderAll(); renderReconBox();
+}
+function renderReconBox() {
+  const box = $("#reconBox");
+  if (!ageing) { box.classList.add("hidden"); box.innerHTML = ""; return; }
+  const sel = reconSet(), stats = new Map();
+  for (const l of ageing) { const s = stats.get(l.recon) || {n: 0, t: 0}; s.n++; s.t += l.amt; stats.set(l.recon, s); }
+  const list = [...stats.entries()].sort((x, y) => (reconDefault(y[0]) - reconDefault(x[0])) || x[0].localeCompare(y[0]));
+  box.innerHTML = `<details open style="margin-top:12px"><summary>Accounts included from the ageing report (${sel.size} of ${stats.size})</summary>
+    <div class="row" style="margin-top:8px"><button class="btn link" type="button" data-rs="default">Default (Advance to Vendor + Sundry Creditors)</button>
+      <button class="btn link" type="button" data-rs="all">All</button><button class="btn link" type="button" data-rs="none">None</button></div>
+    <div class="recon">${list.map(([a, s]) => `<label><input type="checkbox" data-recon="${esc(a)}"${sel.has(a) ? " checked" : ""}>
+      <span>${esc(a)}</span><small>${s.n.toLocaleString("en-IN")} · ${inr(s.t)} ${s.t < 0 ? "Cr" : s.t > 0 ? "Dr" : ""}</small></label>`).join("")}</div></details>`;
+  box.classList.remove("hidden");
+}
+$("#reconBox").addEventListener("change", e => {
+  const a = e.target.dataset.recon; if (a == null) return;
+  const sel = reconSet(); e.target.checked ? sel.add(a) : sel.delete(a);
+  reconSel = [...sel]; savePrefs(); applyAgeing();
+});
+$("#reconBox").addEventListener("click", e => {
+  const k = e.target.dataset.rs; if (!k) return;
+  reconSel = k === "default" ? null : k === "all" ? [...new Set(ageing.map(l => l.recon))] : [];
+  savePrefs(); applyAgeing();
+});
+function renderAgeBox() {
+  const box = $("#ageBox"), labels = ageing && ageing.buckets;
+  if (!labels || !rows.length) { box.classList.add("hidden"); return; }
+  const tot = labels.map((_, i) => rows.reduce((s, r) => s + (r.age ? r.age[i] : 0), 0));
+  box.innerHTML = `<div class="sect">Ageing (net, all ${M().ps} shown)</div><div class="agegrid">${labels.map((l, i) =>
+    `<div>${esc(l)}<b>${inr(tot[i])} ${tot[i] < 0 ? "Cr" : tot[i] > 0 ? "Dr" : ""}</b></div>`).join("")}</div>`;
+  box.classList.remove("hidden");
+}
 function findCol(cols, keys, exclude = []) {
   for (const k of keys) {
     const c = cols.find(c => { const l = c.toLowerCase(); return l.includes(k) && !exclude.some(x => l.includes(x)); });
@@ -509,12 +596,13 @@ async function readMaster(file) {
 // ------------------------------------------------------------------ balances
 function buildRows() {
   const map = new Map();
-  const get = code => { if (!map.has(code)) map.set(code, {code, nameA: "", nameB: "", a: 0, b: 0}); return map.get(code); };
-  for (const r of dumpA) { const v = get(r.code); v.a += r.amt; if (!v.nameA) v.nameA = r.name; }
-  for (const r of dumpB || []) { const v = get(r.code); v.b += r.amt; if (!v.nameB) v.nameB = r.name; }
+  const get = code => { if (!map.has(code)) map.set(code, {code, nameA: "", nameB: "", a: 0, b: 0, age: null}); return map.get(code); };
+  const addAge = (v, r) => { if (!r.age) return; v.age = v.age || r.age.map(() => 0); r.age.forEach((x, i) => { v.age[i] += x; }); };
+  for (const r of dumpA) { const v = get(r.code); v.a += r.amt; addAge(v, r); if (!v.nameA) v.nameA = r.name; }
+  for (const r of dumpB || []) { const v = get(r.code); v.b += r.amt; addAge(v, r); if (!v.nameB) v.nameB = r.name; }
   rows = [...map.values()].map(v => {
     const a = round2(v.a), b = round2(v.b), net = round2(a + b);
-    return {code: v.code, name: v.nameB || v.nameA, a, b, net, email: "", cc: "", send: false};
+    return {code: v.code, name: v.nameB || v.nameA, a, b, net, age: v.age && v.age.map(round2), email: "", cc: "", send: false};
   }).sort((a, b) => a.code.localeCompare(b.code, undefined, {numeric: true}));
   applyMaster(); resetSend();
 }
@@ -620,7 +708,7 @@ function renderSelection() {
 }
 function renderAll() {
   ["#step2", "#step3", "#stepDl", "#step4"].forEach(s => $(s).classList.remove("hidden"));
-  renderMetrics(); renderFilters(); renderTable(); renderSelection();
+  renderMetrics(); renderAgeBox(); renderFilters(); renderTable(); renderSelection();
 }
 
 // ------------------------------------------------------------------ email values
@@ -779,7 +867,8 @@ function renderPreview() {
   const r = rows.find(x => x.code === $("#pick").value);
   if (!r || !$("#asAt").value || !$("#letterDate").value) return;
   const m = mailFor(r);
-  $("#mailMeta").innerHTML = `<div><b>To:</b> ${esc(m.to) || "—"}</div><div><b>CC:</b> ${esc(m.cc) || "—"}</div><div><b>Subject:</b> ${esc(m.subject)}</div>`;
+  const age = r.age && ageing ? `<div><b>Ageing:</b> ${ageing.buckets.map((l, i) => r.age[i] ? `${esc(l)} ${inr(r.age[i])} ${r.age[i] < 0 ? "Cr" : "Dr"}` : "").filter(Boolean).join(" · ") || "—"}</div>` : "";
+  $("#mailMeta").innerHTML = `<div><b>To:</b> ${esc(m.to) || "—"}</div><div><b>CC:</b> ${esc(m.cc) || "—"}</div><div><b>Subject:</b> ${esc(m.subject)}</div>${age}`;
   $("#bodyFrame").srcdoc = `<!doctype html><meta charset="utf-8"><body style="font:14px Calibri,Arial,sans-serif;color:#222;margin:12px">${m.body}</body>`;
   if (pdfUrl) URL.revokeObjectURL(pdfUrl);
   pdfUrl = URL.createObjectURL(makeLetter(r).output("blob"));
@@ -1125,7 +1214,10 @@ $("#clearSign").addEventListener("click", () => { delete images.sign; saveImages
 
 // ------------------------------------------------------------------ events
 function showMsg(html, cls = "err") { $("#loadMsg").innerHTML = html ? `<div class="alert ${cls}">${html}</div>` : ""; }
-function markDrop(id, file) { const d = $(id); d.classList.toggle("done", !!file); d.querySelector(".name").textContent = file ? "✓ " + (file.name || file) : ""; }
+function markDrop(id, file) {
+  const d = $(id); d.classList.toggle("done", !!file); d.querySelector(".name").textContent = file ? "✓ " + (file.name || file) : "";
+  const rm = d.querySelector(".rm"); if (rm) rm.classList.toggle("hidden", !file);
+}
 
 // ------------------------------------------------------------------ saved SAP data (IndexedDB – too big for localStorage)
 // One record per mode: {a: {rows, cols, file, savedAt}, b: {...}}. Kept until a new file is uploaded or it is cleared.
@@ -1143,15 +1235,24 @@ async function idbDo(fn) {
     tx.oncomplete = () => { db.close(); res(req && req.result); }; tx.onerror = () => { db.close(); rej(tx.error); };
   });
 }
+// which: "a" / "b" (the two dumps) or "ag" (vendor ageing report, which replaces both)
 async function saveDump(which, data, fileName) {
   try {
     const rec = (await idbDo(s => s.get(mode))) || {};
     // stored column-wise (codes / amounts / one name per code): far quicker to save and load than 50,000 objects
     const names = {};
     for (const r of data) if (!(r.code in names)) names[r.code] = r.name;
-    rec[which] = {codes: data.map(r => r.code), amts: Float64Array.from(data, r => r.amt), names,
-                  cols: data.cols, file: fileName, savedAt: new Date().toISOString()};
-    await idbDo(s => s.put(rec, mode));
+    const s = {codes: data.map(r => r.code), amts: Float64Array.from(data, r => r.amt), names,
+               cols: data.cols, file: fileName, savedAt: new Date().toISOString()};
+    if (which === "ag") {
+      const accts = [...new Set(data.map(r => r.recon))], idx = new Map(accts.map((a, i) => [a, i])), nb = data.buckets.length;
+      const age = new Float64Array(data.length * nb);
+      data.forEach((r, i) => r.age.forEach((x, j) => { age[i * nb + j] = x; }));
+      Object.assign(s, {accts, acct: Uint16Array.from(data, r => idx.get(r.recon)), age, buckets: data.buckets});
+      delete rec.a; delete rec.b;
+    } else delete rec.ag;
+    rec[which] = s;
+    await idbDo(st => st.put(rec, mode));
   } catch (e) { console.warn("Could not save the uploaded data in this browser:", e); }
 }
 const savedLabel = s => { const d = new Date(s.savedAt); return `${s.file} (saved ${dmy(d)} ${pad(d.getHours())}:${pad(d.getMinutes())})`; };
@@ -1159,17 +1260,25 @@ async function restoreDumps() {
   const forMode = mode;
   let rec = null;
   try { rec = await idbDo(s => s.get(forMode)); } catch (e) { return; }
-  if (forMode !== mode || !rec || (!rec.a && !rec.b)) { renderSavedNote(null); return; }
+  if (forMode !== mode || !rec || (!rec.a && !rec.b && !rec.ag)) { renderSavedNote(null); return; }
   const load = s => { const d = s.codes.map((code, i) => ({code, name: s.names[code], amt: s.amts[i]})); d.cols = s.cols; return d; };
+  renderSavedNote(rec);
+  if (rec.ag) {
+    const s = rec.ag, nb = s.buckets.length;
+    ageing = load(s);
+    ageing.forEach((l, i) => { l.recon = s.accts[s.acct[i]]; l.age = Array.from(s.age.subarray(i * nb, i * nb + nb)); });
+    ageing.buckets = s.buckets;
+    markDrop("#dropAg", savedLabel(s)); applyAgeing();
+    return;
+  }
   if (rec.a) { dumpA = load(rec.a); markDrop("#dropA", savedLabel(rec.a)); }
   if (rec.b) { dumpB = load(rec.b); markDrop("#dropB", savedLabel(rec.b)); }
-  renderSavedNote(rec);
   if (dumpA && (dumpB || M().b.optional)) { buildRows(); renderAll(); }
 }
 function renderSavedNote(rec) {
   const box = $("#savedNote");
   if (!rec) { box.classList.add("hidden"); box.innerHTML = ""; return; }
-  const oldest = [rec.a, rec.b].filter(Boolean).map(s => new Date(s.savedAt)).sort((x, y) => x - y)[0];
+  const oldest = [rec.a, rec.b, rec.ag].filter(Boolean).map(s => new Date(s.savedAt)).sort((x, y) => x - y)[0];
   const today = dmy(oldest) === dmy(new Date());
   box.innerHTML = `<div class="alert ${today ? "info" : "warn"}">Using the SAP data saved in this browser${today ? " today" : ` on ${dmy(oldest)}`}.
     Upload a file again only if the data has changed. <button class="btn link" id="clearData" type="button">Clear saved data</button></div>`;
@@ -1178,8 +1287,7 @@ function renderSavedNote(rec) {
 $("#savedNote").addEventListener("click", async e => {
   if (e.target.id !== "clearData" || !confirm(`Clear the ${M().p} SAP data saved in this browser? You will need to upload the files again.`)) return;
   try { await idbDo(s => s.delete(mode)); } catch (err) {}
-  dumpA = dumpB = null; rows = [];
-  ["#fileA", "#fileB"].forEach(id => $(id).value = ""); ["#dropA", "#dropB"].forEach(id => markDrop(id, null));
+  clearUploads();
   ["#step2", "#step3", "#stepDl"].forEach(s => $(s).classList.add("hidden"));
   if (!trkRecords().length) $("#step4").classList.add("hidden");
   renderSavedNote(null); showMsg("");
@@ -1187,13 +1295,26 @@ $("#savedNote").addEventListener("click", async e => {
 function refreshMasterNote() {
   const n = master ? Object.keys(master).length : 0;
   $("#clearMaster").classList.toggle("hidden", !n);
-  if (n && !$("#fileMaster").files.length) { $("#dropMaster").classList.add("done"); $("#dropMaster .name").textContent = `✓ Remembered from last time (${n.toLocaleString("en-IN")} vendors)`; }
+  if (n && !$("#fileMaster").files.length) { $("#dropMaster").classList.add("done"); $("#dropMaster .name").textContent = `✓ Remembered from last time (${n.toLocaleString("en-IN")} ${M().ps})`; }
+}
+// forgets the SAP data on screen (dumps and ageing report)
+function clearUploads() {
+  dumpA = dumpB = ageing = null; rows = [];
+  ["#fileA", "#fileB", "#fileAg"].forEach(id => $(id).value = "");
+  ["#dropA", "#dropB", "#dropAg"].forEach(id => markDrop(id, null));
+  renderReconBox(); $("#ageBox").classList.add("hidden");
 }
 async function onDump(which, input, dropId) {
   const f = input.files[0]; markDrop(dropId, null); if (!f) return;
   try {
     showMsg("Reading " + esc(f.name) + "…", "info"); await tick();
     const data = await readDump(f);
+    if (ageing) {   // switching back from the ageing report to the two dumps
+      ageing = null; renderReconBox(); markDrop("#dropAg", null); $("#fileAg").value = "";
+      if (which === "a") dumpB = null; else dumpA = null;
+      rows = []; $("#ageBox").classList.add("hidden");
+      ["#step2", "#step3", "#stepDl"].forEach(s => $(s).classList.add("hidden"));
+    }
     if (which === "a") dumpA = data; else dumpB = data;
     markDrop(dropId, f); renderSavedNote(null);
     saveDump(which, data, f.name);   // so the file needn't be uploaded again next time
@@ -1204,6 +1325,38 @@ async function onDump(which, input, dropId) {
 }
 $("#fileA").addEventListener("change", e => onDump("a", e.target, "#dropA"));
 $("#fileB").addEventListener("change", e => onDump("b", e.target, "#dropB"));
+// ✕ Remove this file: drops one upload from the screen and from the saved data
+async function removeUpload(which) {
+  const label = which === "ag" ? "the Vendor Ageing Report" : (which === "a" ? M().a : M().b).label.replace(" (SAP)", "");
+  if (!confirm(`Remove ${label} from this app? Upload it again if you need it.`)) return;
+  let rec = null;
+  try {
+    rec = (await idbDo(s => s.get(mode))) || {};
+    delete rec[which];
+    await idbDo(s => (rec.a || rec.b || rec.ag) ? s.put(rec, mode) : s.delete(mode));
+  } catch (e) {}
+  if (which === "ag") { ageing = null; dumpA = dumpB = null; renderReconBox(); }
+  else if (which === "a") dumpA = null; else dumpB = null;
+  const id = {a: "#dropA", b: "#dropB", ag: "#dropAg"}[which];
+  $({a: "#fileA", b: "#fileB", ag: "#fileAg"}[which]).value = ""; markDrop(id, null);
+  renderSavedNote(rec && (rec.a || rec.b || rec.ag) ? rec : null); showMsg("");
+  if (dumpA && (dumpB || M().b.optional)) { buildRows(); renderAll(); return; }   // e.g. optional customer-advance file removed
+  rows = []; $("#ageBox").classList.add("hidden");
+  ["#step2", "#step3", "#stepDl"].forEach(s => $(s).classList.add("hidden"));
+  if (!trkRecords().length) $("#step4").classList.add("hidden");
+}
+document.querySelectorAll("[data-rm]").forEach(b => b.addEventListener("click", () => removeUpload(b.dataset.rm)));
+$("#fileAg").addEventListener("change", async e => {
+  const f = e.target.files[0]; markDrop("#dropAg", null); if (!f) return;
+  try {
+    showMsg(`Reading ${esc(f.name)}… large reports take a few seconds.`, "info"); await tick();
+    const data = await readAgeing(f);
+    clearUploads(); ageing = data; markDrop("#dropAg", f); renderSavedNote(null);
+    saveDump("ag", data, f.name);
+    applyAgeing();
+    showMsg(`${data.length.toLocaleString("en-IN")} lines read – ${esc(data.cols)}. Check the accounts included below.`, "info");
+  } catch (err) { showMsg(esc(err.message)); }
+});
 
 // ------------------------------------------------------------------ vendors / customers
 const partyText = t => t.replace(/\{P\}/g, M().P).replace(/\{ps\}/g, M().ps).replace(/\{p\}/g, M().p);
@@ -1214,14 +1367,14 @@ function applyMode() {
   $("#lblB").textContent = M().b.label + (M().b.optional ? " – optional" : "");
   $("#lblBsub").textContent = M().b.optional ? "Only if advances are in a separate dump" : "Excel, header in row 1";
   $("#thA").textContent = M().a.col; $("#thB").textContent = M().b.col;
+  $("#dropAg").classList.toggle("hidden", mode !== "vendor");
 }
 $("#modeSwitch").addEventListener("click", e => {
   const b = e.target.closest("[data-mode]"); if (!b || b.dataset.mode === mode || sending) return;
   mode = b.dataset.mode; savePrefs();
   // each mode has its own dumps and master; start step 1 afresh
-  dumpA = dumpB = null; rows = []; filter = "All"; master = lsGet(M().master);
-  ["#fileA", "#fileB", "#fileMaster"].forEach(id => $(id).value = "");
-  ["#dropA", "#dropB", "#dropMaster"].forEach(id => markDrop(id, null));
+  clearUploads(); filter = "All"; master = lsGet(M().master);
+  $("#fileMaster").value = ""; markDrop("#dropMaster", null);
   ["#step2", "#step3", "#stepDl", "#step4"].forEach(s => $(s).classList.add("hidden"));
   showMsg(""); renderSavedNote(null); applyMode(); refreshMasterNote(); trkAsAtSel = ""; renderTracker();
   restoreDumps();
@@ -1267,7 +1420,8 @@ $("#dlMaster").addEventListener("click", () => writeXlsx(rows.map(r => ({[M().P 
 $("#dlBal").addEventListener("click", () => writeXlsx(rows.map(r => ({
   [M().P + " Code"]: r.code, [M().P + " Name"]: r.name, [M().a.col]: r.a, [M().b.col]: r.b, "Net": r.net,
   "Nature": r.net > 0 ? M().drLong : r.net < 0 ? M().crLong : "Nil", "Email": r.email, "CC": r.cc,
-  "Email check": (emailIssue(r) || {}).text || "OK", "Send": r.send ? "Yes" : ""
+  "Email check": (emailIssue(r) || {}).text || "OK", "Send": r.send ? "Yes" : "",
+  ...(r.age && ageing ? Object.fromEntries(ageing.buckets.map((l, i) => [l, r.age[i]])) : {})
 })), `${M().p}_balances_${$("#asAt").value.replace(/-/g, "")}.xlsx`));
 $("#emailCheck").addEventListener("click", e => {
   if (e.target.id !== "dlIssues") return;
@@ -1546,7 +1700,7 @@ $("#trkRestore").addEventListener("change", async e => {
 
 function savePrefs() {
   lsSet(LS_PREFS, {asAt: $("#asAt").value, fromAcc: $("#fromAcc").value, action: $("#action").value, delay: $("#delay").value,
-                   mode, remDays: $("#remDays").value});
+                   mode, remDays: $("#remDays").value, recon: reconSel});
 }
 
 // ------------------------------------------------------------------ init

@@ -21,6 +21,11 @@ Copy **`index.html`** and **`Outlook_Connector.bat`** into one folder on any Win
   must sit next to `index.html` in the repository.
 - **Vendors / Customers** switch (top right): customers use the debtor open-items dump (customer advances in a
   separate dump are optional) and their own customer master. Dr = receivable by us, Cr = payable by us in both.
+- **Vendor Ageing Report** (step 1, vendors): upload this one SAP file instead of the two dumps. Tick which
+  reconciliation accounts to include (default: Advance-Vendors + all Sundry Creditors). Ageing buckets appear in
+  step 2, in the preview and in the Balances Excel.
+- **Saved uploads**: uploaded SAP data is kept in the browser (IndexedDB) and reloaded when the app opens; upload
+  again only when the data changes, or use *Clear saved data*.
 - **Letterhead & signature** (step 3): upload the company logo and, optionally, the authorised signatory's signature.
 - **Email check** (step 2): missing or invalid emails / CCs are flagged red and not sent; likely typos (e.g. `gmial.com`)
   are flagged amber. *Download the list* gives an Excel of problems to get corrected.
