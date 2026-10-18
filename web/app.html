@@ -180,10 +180,12 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
     <h2><span class="step">2</span> Review balances</h2>
     <div class="metrics" id="metrics"></div>
     <div id="ageBox" class="hidden"></div>
+    <div id="groupBox" class="hidden"></div>
     <div id="emailCheck"></div>
     <div class="row" style="justify-content:space-between">
       <div class="chips" id="filters"></div>
       <div class="row">
+        <select id="groupSel" class="hidden" style="width:auto" title="Customer group"></select>
         <input type="search" id="search" placeholder="Search code / name / email" style="width:240px">
         <button class="btn" id="dlMaster" type="button" data-t="⬇ {P} master template"></button>
         <button class="btn" id="dlBal" type="button">⬇ Balances (Excel)</button>
@@ -192,7 +194,7 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
     <div class="tablewrap"><table>
       <thead><tr>
         <th><input type="checkbox" id="checkAll" title="Tick / untick all rows shown"></th>
-        <th>Code</th><th data-t="{P}"></th><th id="thA"></th><th id="thB"></th><th>Net</th><th>Email</th><th>CC</th>
+        <th>Code</th><th data-t="{P}"></th><th id="thGroup" class="hidden">Group</th><th id="thA"></th><th id="thB"></th><th>Net</th><th>Email</th><th>CC</th>
       </tr></thead>
       <tbody id="tbody"></tbody>
     </table></div>
@@ -259,9 +261,12 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
     <h2>⬇ Download letters in one go</h2>
     <div class="row">
       <label class="f" style="min-width:300px"><span data-t="Which {ps}"></span><select id="dlScope"></select></label>
+      <label class="f hidden" id="dlGroupWrap" style="min-width:220px">Customer group<select id="dlGroup"></select></label>
       <button class="btn primary" id="dlPdf" type="button" style="align-self:flex-end">⬇ All letters – one PDF</button>
       <button class="btn" id="dlZip" type="button" style="align-self:flex-end">⬇ All letters – ZIP (separate PDFs)</button>
     </div>
+    <label class="row hidden" id="dlFoldersWrap" style="gap:8px;margin-top:10px"><input type="checkbox" id="dlFolders" checked>
+      <span>In the ZIP, put each customer group's certificates in its own folder (named after the group)</span></label>
     <div class="progress" id="dlProg"><div></div></div>
     <p class="note" id="dlProgText">One PDF is handy for printing; the ZIP gives one file per letter.</p>
   </section>
@@ -499,9 +504,12 @@ async function readDump(file) {
     ["document currency", "doc. curr", "cash", "cheque", "credit amount", "security", "opening"]);
   const missing = [[code, m.codeCol], [name, m.nameCol], [amt, COL_AMOUNT]].filter(([c]) => !c).map(([, want]) => want);
   if (missing.length) throw new Error(`${file.name}: column(s) not found: ${missing.join(", ")}. Is this a ${m.p} file?`);
-  const out = data.map(r => ({code: cleanCode(r[code]), name: String(r[name] ?? "").trim(), amt: toNum(r[amt])}))
+  // group name (e.g. "Customer Group Name": Distributors, Home Delivery …); the plain group code is a fallback
+  const group = findCol(cols, [key + " group name", "group name"]) || findCol(cols, [key + " group"]);
+  const out = data.map(r => ({code: cleanCode(r[code]), name: String(r[name] ?? "").trim(), amt: toNum(r[amt]),
+                              group: group ? String(r[group] ?? "").trim() : ""}))
                   .filter(r => r.code !== "");      // drops the grand-total row
-  out.cols = `${m.P} code = “${code}”, name = “${name}”, amount = “${amt}”`;
+  out.cols = `${m.P} code = “${code}”, name = “${name}”, amount = “${amt}”` + (group ? `, group = “${group}”` : "");
   return out;
 }
 // Vendor Ageing Report: one line per open item with Vendor, Name, Total, ageing buckets and Recon. Acc
@@ -596,13 +604,13 @@ async function readMaster(file) {
 // ------------------------------------------------------------------ balances
 function buildRows() {
   const map = new Map();
-  const get = code => { if (!map.has(code)) map.set(code, {code, nameA: "", nameB: "", a: 0, b: 0, age: null}); return map.get(code); };
+  const get = code => { if (!map.has(code)) map.set(code, {code, nameA: "", nameB: "", a: 0, b: 0, age: null, group: ""}); return map.get(code); };
   const addAge = (v, r) => { if (!r.age) return; v.age = v.age || r.age.map(() => 0); r.age.forEach((x, i) => { v.age[i] += x; }); };
-  for (const r of dumpA) { const v = get(r.code); v.a += r.amt; addAge(v, r); if (!v.nameA) v.nameA = r.name; }
-  for (const r of dumpB || []) { const v = get(r.code); v.b += r.amt; addAge(v, r); if (!v.nameB) v.nameB = r.name; }
+  for (const r of dumpA) { const v = get(r.code); v.a += r.amt; addAge(v, r); if (!v.nameA) v.nameA = r.name; if (!v.group) v.group = r.group || ""; }
+  for (const r of dumpB || []) { const v = get(r.code); v.b += r.amt; addAge(v, r); if (!v.nameB) v.nameB = r.name; if (!v.group) v.group = r.group || ""; }
   rows = [...map.values()].map(v => {
     const a = round2(v.a), b = round2(v.b), net = round2(a + b);
-    return {code: v.code, name: v.nameB || v.nameA, a, b, net, age: v.age && v.age.map(round2), email: "", cc: "", send: false};
+    return {code: v.code, name: v.nameB || v.nameA, group: v.group, a, b, net, age: v.age && v.age.map(round2), email: "", cc: "", send: false};
   }).sort((a, b) => a.code.localeCompare(b.code, undefined, {numeric: true}));
   applyMaster(); resetSend();
 }
@@ -633,9 +641,35 @@ const FILTERS = {
   "Credit": r => r.net < 0
 };
 const filterLabel = f => f === "Debit" ? M().dr : f === "Credit" ? M().cr : f;
+const NO_GROUP = "(No group)";
+const groupOf = r => r.group || NO_GROUP;
+const hasGroups = () => rows.some(r => r.group);
+function groupList(list = rows) {
+  const m = new Map();
+  for (const r of list) { const g = groupOf(r), s = m.get(g) || {n: 0, net: 0}; s.n++; s.net += r.net; m.set(g, s); }
+  return [...m.entries()].sort((a, b) => (a[0] === NO_GROUP) - (b[0] === NO_GROUP) || a[0].localeCompare(b[0]));
+}
 function viewRows() {
-  const q = $("#search").value.trim().toLowerCase();
-  return rows.filter(FILTERS[filter]).filter(r => !q || (r.code + " " + r.name + " " + r.email + " " + r.cc).toLowerCase().includes(q));
+  const q = $("#search").value.trim().toLowerCase(), g = $("#groupSel").value;
+  return rows.filter(FILTERS[filter]).filter(r => !g || groupOf(r) === g)
+             .filter(r => !q || (r.code + " " + r.name + " " + r.group + " " + r.email + " " + r.cc).toLowerCase().includes(q));
+}
+// group filter in step 2, group choice in the download box, and the group-wise summary
+function renderGroups() {
+  const on = hasGroups(), groups = on ? groupList() : [];
+  const opts = (sel, allLabel) => {
+    const v = sel.value;
+    sel.innerHTML = `<option value="">${allLabel} (${rows.length.toLocaleString("en-IN")})</option>` +
+      groups.map(([g, s]) => `<option value="${esc(g)}">${esc(g)} (${s.n.toLocaleString("en-IN")})</option>`).join("");
+    sel.value = groups.some(([g]) => g === v) ? v : "";
+  };
+  $("#groupSel").classList.toggle("hidden", !on); $("#thGroup").classList.toggle("hidden", !on);
+  $("#dlGroupWrap").classList.toggle("hidden", !on); $("#dlFoldersWrap").classList.toggle("hidden", !on);
+  $("#groupBox").classList.toggle("hidden", !on);
+  if (!on) { $("#groupSel").value = $("#dlGroup").value = ""; return; }
+  opts($("#groupSel"), "All groups"); opts($("#dlGroup"), "All groups");
+  $("#groupBox").innerHTML = `<div class="sect">By ${M().p} group</div><div class="agegrid">${groups.map(([g, s]) =>
+    `<div>${esc(g)} · ${s.n.toLocaleString("en-IN")}<b>${inr(s.net)} ${s.net < 0 ? "Cr" : s.net > 0 ? "Dr" : ""}</b></div>`).join("")}</div>`;
 }
 function renderFilters() {
   dupCache = null;
@@ -648,7 +682,7 @@ function renderFilters() {
 }
 // summary of email problems among the balances that would be confirmed
 function renderEmailCheck() {
-  const pool = rows.filter(r => Math.abs(r.net) >= minBal());
+  const mb = minBal(), pool = rows.filter(r => Math.abs(r.net) >= mb);
   const count = f => pool.filter(FILTERS[f]).length;
   const miss = count("Missing email"), inv = count("Invalid email / CC"), typo = count("Possible typo");
   const parts = [];
@@ -681,15 +715,15 @@ function emailCell(r, k) {
   return `<input type="text" data-k="${k}" value="${esc(v)}"${cls ? ` class="${cls}" title="${esc(tip)}"` : ""}>`;
 }
 function renderTable() {
-  const v = viewRows();
+  const v = viewRows(), grp = hasGroups();
   $("#tbody").innerHTML = v.map(r => {
     const i = rows.indexOf(r);
     return `<tr data-i="${i}">
       <td><input type="checkbox" data-k="send"${r.send ? " checked" : ""}></td>
-      <td>${esc(r.code)}</td><td class="name">${esc(r.name)}</td>
+      <td>${esc(r.code)}</td><td class="name">${esc(r.name)}</td>${grp ? `<td>${esc(r.group)}</td>` : ""}
       <td class="num">${signed(r.a)}</td><td class="num">${signed(r.b)}</td><td class="num">${drcr(r.net)}</td>
       <td>${emailCell(r, "email")}</td><td>${emailCell(r, "cc")}</td></tr>`;
-  }).join("") || `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px">No ${M().ps} match.</td></tr>`;
+  }).join("") || `<tr><td colspan="${grp ? 9 : 8}" style="text-align:center;color:var(--muted);padding:20px">No ${M().ps} match.</td></tr>`;
   $("#checkAll").checked = v.length > 0 && v.every(r => r.send);
 }
 function renderSelection() {
@@ -708,7 +742,7 @@ function renderSelection() {
 }
 function renderAll() {
   ["#step2", "#step3", "#stepDl", "#step4"].forEach(s => $(s).classList.remove("hidden"));
-  renderMetrics(); renderAgeBox(); renderFilters(); renderTable(); renderSelection();
+  renderMetrics(); renderAgeBox(); renderGroups(); renderFilters(); renderTable(); renderSelection();
 }
 
 // ------------------------------------------------------------------ email values
@@ -864,7 +898,7 @@ function renderPick() {
 }
 function schedulePreview() { clearTimeout(previewTimer); previewTimer = setTimeout(renderPreview, 250); }
 function renderPreview() {
-  const r = rows.find(x => x.code === $("#pick").value);
+  const r = pickedRow();
   if (!r || !$("#asAt").value || !$("#letterDate").value) return;
   const m = mailFor(r);
   const age = r.age && ageing ? `<div><b>Ageing:</b> ${ageing.buckets.map((l, i) => r.age[i] ? `${esc(l)} ${inr(r.age[i])} ${r.age[i] < 0 ? "Cr" : "Dr"}` : "").filter(Boolean).join(" · ") || "—"}</div>` : "";
@@ -973,12 +1007,16 @@ async function buildPackage(lettersOnly, list, reminder = false) {
   try {
     const asAt = rowAsAt(list[0]), now = new Date();
     const stamp = `${ymd(now).replace(/-/g, "")}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-    const root = `${reminder ? "Reminders" : "BalanceConfirmation"}_${ymd(asAt)}_${test ? "TEST_" : ""}${stamp}`;
-    const zip = new JSZip(), folder = zip.folder(root), letters = folder.folder("letters");
+    const grpTag = lettersOnly && $("#dlGroup").value ? safeFolder($("#dlGroup").value).replace(/\s+/g, "_") + "_" : "";
+    const root = `${reminder ? "Reminders" : "BalanceConfirmation"}_${grpTag}${ymd(asAt)}_${test ? "TEST_" : ""}${stamp}`;
+    const zip = new JSZip(), folder = zip.folder(root);
+    // letters-only ZIP can have one folder per customer group (e.g. Distributors\BC_200003_….pdf)
+    const byGroupZip = lettersOnly && hasGroups() && $("#dlFolders").checked;
+    const letters = byGroupZip ? null : folder.folder("letters");
     const csv = [["vendor_code", "vendor_name", "net", "as_at", "mode", "to", "cc", "subject", "body", "pdf"].map(csvCell).join(",")];
     for (let i = 0; i < list.length; i++) {
       const r = list[i], file = letterName(r);
-      letters.file(file, makeLetter(r).output("arraybuffer"));
+      (byGroupZip ? folder.folder(safeFolder(groupOf(r))) : letters).file(file, makeLetter(r).output("arraybuffer"));
       const m = mailFor(r, reminder);
       csv.push([r.code, r.name, r.net.toFixed(2), ymd(rowAsAt(r)), test ? "TEST" : "LIVE", m.to, m.cc, m.subject, m.body, "letters\\" + file].map(csvCell).join(","));
       if (i % 10 === 0) { setProgress_(i / list.length * 0.8, `Creating letters… ${i + 1} / ${list.length}`); await tick(); }
@@ -1018,13 +1056,16 @@ async function buildPackage(lettersOnly, list, reminder = false) {
 // ------------------------------------------------------------------ download letters in one go
 const SCOPES = {
   ticked: ["Ticked {ps}", () => rows.filter(r => r.send)],
-  balance: ["All {ps} with balance ≥ minimum", () => rows.filter(r => Math.abs(r.net) >= minBal())],
+  balance: ["All {ps} with balance ≥ minimum", () => { const mb = minBal(); return rows.filter(r => Math.abs(r.net) >= mb); }],
   all: ["All {ps}", () => rows]
 };
-const scopeRows = () => SCOPES[$("#dlScope").value || "ticked"][1]();
+const dlGroupFilter = () => { const g = $("#dlGroup").value; return r => !g || groupOf(r) === g; };
+const scopeRows = () => SCOPES[$("#dlScope").value || "ticked"][1]().filter(dlGroupFilter());
+// Windows folder names can't contain \ / : * ? " < > |
+const safeFolder = s => String(s).replace(/[\\/:*?"<>|]+/g, "-").replace(/[. ]+$/, "").trim().slice(0, 60) || "Group";
 function renderScope() {
-  const s = $("#dlScope"), v = s.value || "ticked";
-  s.innerHTML = Object.entries(SCOPES).map(([k, [l, f]]) => `<option value="${k}">${partyText(l)} (${f().length.toLocaleString("en-IN")})</option>`).join("");
+  const s = $("#dlScope"), v = s.value || "ticked", keep = dlGroupFilter();
+  s.innerHTML = Object.entries(SCOPES).map(([k, [l, f]]) => `<option value="${k}">${partyText(l)} (${f().filter(keep).length.toLocaleString("en-IN")})</option>`).join("");
   s.value = v;
 }
 async function downloadLettersPdf() {
@@ -1040,7 +1081,8 @@ async function downloadLettersPdf() {
       if (i % 10 === 0) { set(i / list.length, `Creating letters… ${i + 1} / ${list.length}`); await tick(); }
     }
     doc.setProperties({title: `Balance Confirmations as at ${dmy(asAt)}`, author: cfg.company_name});
-    const name = `Balance_Confirmations_${ymd(asAt)}_${list.length}_${M().ps}.pdf`;
+    const grp = $("#dlGroup").value ? safeFolder($("#dlGroup").value).replace(/\s+/g, "_") + "_" : "";
+    const name = `Balance_Confirmations_${grp}${ymd(asAt)}_${list.length}_${M().ps}.pdf`;
     download(doc.output("blob"), name);
     set(1, `Done: ${list.length} letter(s) in ${name}`);
   } catch (e) {
@@ -1240,9 +1282,9 @@ async function saveDump(which, data, fileName) {
   try {
     const rec = (await idbDo(s => s.get(mode))) || {};
     // stored column-wise (codes / amounts / one name per code): far quicker to save and load than 50,000 objects
-    const names = {};
-    for (const r of data) if (!(r.code in names)) names[r.code] = r.name;
-    const s = {codes: data.map(r => r.code), amts: Float64Array.from(data, r => r.amt), names,
+    const names = {}, groups = {};
+    for (const r of data) { if (!(r.code in names)) names[r.code] = r.name; if (r.group && !(r.code in groups)) groups[r.code] = r.group; }
+    const s = {codes: data.map(r => r.code), amts: Float64Array.from(data, r => r.amt), names, groups,
                cols: data.cols, file: fileName, savedAt: new Date().toISOString()};
     if (which === "ag") {
       const accts = [...new Set(data.map(r => r.recon))], idx = new Map(accts.map((a, i) => [a, i])), nb = data.buckets.length;
@@ -1261,7 +1303,10 @@ async function restoreDumps() {
   let rec = null;
   try { rec = await idbDo(s => s.get(forMode)); } catch (e) { return; }
   if (forMode !== mode || !rec || (!rec.a && !rec.b && !rec.ag)) { renderSavedNote(null); return; }
-  const load = s => { const d = s.codes.map((code, i) => ({code, name: s.names[code], amt: s.amts[i]})); d.cols = s.cols; return d; };
+  const load = s => {
+    const g = s.groups || {}, d = s.codes.map((code, i) => ({code, name: s.names[code], amt: s.amts[i], group: g[code] || ""}));
+    d.cols = s.cols; return d;
+  };
   renderSavedNote(rec);
   if (rec.ag) {
     const s = rec.ag, nb = s.buckets.length;
@@ -1392,6 +1437,8 @@ $("#clearMaster").addEventListener("click", () => {
 });
 $("#filters").addEventListener("click", e => { const f = e.target.closest("[data-f]"); if (!f) return; filter = f.dataset.f; renderFilters(); renderTable(); });
 $("#search").addEventListener("input", renderTable);
+$("#groupSel").addEventListener("change", renderTable);
+$("#dlGroup").addEventListener("change", renderScope);
 $("#checkAll").addEventListener("change", e => { viewRows().forEach(r => r.send = e.target.checked); renderFilters(); renderTable(); renderSelection(); });
 $("#tbody").addEventListener("change", e => {
   const tr = e.target.closest("tr[data-i]"); if (!tr) return;
@@ -1414,18 +1461,19 @@ $("#minBal").addEventListener("change", () => { if (!rows.length) return; resetS
 $("#confirm").addEventListener("change", renderSelection);
 $("#pick").addEventListener("change", renderPreview);
 $("#dlOne").addEventListener("click", () => {
-  const r = rows.find(x => x.code === $("#pick").value); if (r) makeLetter(r).save(`BC_${r.code}_${safeName(r.name)}.pdf`);
+  const r = pickedRow(); if (r) makeLetter(r).save(`BC_${r.code}_${safeName(r.name)}.pdf`);
 });
-$("#dlMaster").addEventListener("click", () => writeXlsx(rows.map(r => ({[M().P + " Code"]: r.code, [M().P + " Name"]: r.name, "Email": r.email, "CC": r.cc})), `${M().p}_master.xlsx`));
+const groupCol = r => hasGroups() ? {[M().P + " Group"]: r.group} : {};
+$("#dlMaster").addEventListener("click", () => writeXlsx(rows.map(r => ({[M().P + " Code"]: r.code, [M().P + " Name"]: r.name, ...groupCol(r), "Email": r.email, "CC": r.cc})), `${M().p}_master.xlsx`));
 $("#dlBal").addEventListener("click", () => writeXlsx(rows.map(r => ({
-  [M().P + " Code"]: r.code, [M().P + " Name"]: r.name, [M().a.col]: r.a, [M().b.col]: r.b, "Net": r.net,
+  [M().P + " Code"]: r.code, [M().P + " Name"]: r.name, ...groupCol(r), [M().a.col]: r.a, [M().b.col]: r.b, "Net": r.net,
   "Nature": r.net > 0 ? M().drLong : r.net < 0 ? M().crLong : "Nil", "Email": r.email, "CC": r.cc,
   "Email check": (emailIssue(r) || {}).text || "OK", "Send": r.send ? "Yes" : "",
   ...(r.age && ageing ? Object.fromEntries(ageing.buckets.map((l, i) => [l, r.age[i]])) : {})
 })), `${M().p}_balances_${$("#asAt").value.replace(/-/g, "")}.xlsx`));
 $("#emailCheck").addEventListener("click", e => {
   if (e.target.id !== "dlIssues") return;
-  const list = rows.filter(r => Math.abs(r.net) >= minBal() && emailIssue(r));
+  const mb = minBal(), list = rows.filter(r => Math.abs(r.net) >= mb && emailIssue(r));
   writeXlsx(list.map(r => ({[M().P + " Code"]: r.code, [M().P + " Name"]: r.name, "Net": r.net, "Email": r.email, "CC": r.cc, "Problem": emailIssue(r).text})),
             `${M().p}_email_issues.xlsx`);
 });
@@ -1436,13 +1484,13 @@ $("#sendNow").addEventListener("click", sendDirect);
 $("#stopSend").addEventListener("click", () => { stopReq = true; $("#progText").textContent = "Stopping after the current mail…"; });
 $("#dlLog").addEventListener("click", () => writeXlsx(sendLog, `send_log_${ymd(new Date())}.xlsx`));
 $("#openOne").addEventListener("click", async () => {
-  const r = rows.find(x => x.code === $("#pick").value);
+  const r = pickedRow();
   if (!r || !sendFieldsOk()) return;
   try { await api("/send", mailPayload(r, "Display")); trackOne(r, "Outlook Connector – Open"); }
   catch (e) { if (!e.http) connLost(); alert("Could not open the mail in Outlook: " + (e.http ? e.message : "the Outlook Connector is not running.")); }
 });
 // ---- Email this vendor: share sheet / mailto / Outlook draft (.eml)
-const pickedRow = () => rows.find(x => x.code === $("#pick").value);
+function pickedRow() { const c = $("#pick").value; return rows.find(x => x.code === c); }
 // single-vendor mails count as sent once handed to the mail app (live mode only)
 const trackOne = (r, via) => { if (!$("#testTo").value.trim()) trackSent([r], via); };
 function htmlToText(html) {
@@ -1540,7 +1588,7 @@ function trackSent(list, via) {
   const asAt = $("#asAt").value, letterDate = $("#letterDate").value, today = todayYmd();
   for (const r of list) {
     const k = trkKey(r.mode || mode, r.asAt || asAt, r.code), t = track[k];
-    const base = {name: r.name, net: r.net, email: r.email, cc: r.cc, letterDate: r.letterDate || letterDate, via};
+    const base = {name: r.name, group: r.group || "", net: r.net, email: r.email, cc: r.cc, letterDate: r.letterDate || letterDate, via};
     if (t) {
       Object.assign(t, base);
       if (t.status === "Bounced") { t.status = "Sent"; t.sentOn = today; }   // re-sent after fixing the email
@@ -1671,7 +1719,7 @@ $("#trkXlsx").addEventListener("click", () => {
   const details = all.map(t => {
     const theirs = String(t.theirBal).trim() === "" ? "" : toNum(t.theirBal);
     return {
-      [P + " Code"]: t.code, [P + " Name"]: t.name, "Balance as at": asAt, "Balance as per our books (₹)": Math.abs(t.net),
+      [P + " Code"]: t.code, [P + " Name"]: t.name, ...(all.some(x => x.group) ? {[P + " Group"]: t.group || ""} : {}), "Balance as at": asAt, "Balance as per our books (₹)": Math.abs(t.net),
       "Dr / Cr": t.net > 0 ? "Dr" : t.net < 0 ? "Cr" : "Nil", "Email": t.email, "Letter date": t.letterDate ? dmy(parseDate(t.letterDate)) : "",
       "Sent on": dmy(parseDate(t.sentOn)), "Sent via": t.via || "", "Reminders": t.reminders.length,
       "Last reminder": t.reminders.length ? dmy(parseDate(t.reminders[t.reminders.length - 1])) : "",

@@ -26,6 +26,9 @@ Copy **`index.html`** and **`Outlook_Connector.bat`** into one folder on any Win
   step 2, in the preview and in the Balances Excel.
 - **Saved uploads**: uploaded SAP data is kept in the browser (IndexedDB) and reloaded when the app opens; upload
   again only when the data changes, or use *Clear saved data*.
+- **Customer groups**: when the customer report has *Customer Group Name*, step 2 shows a Group column, a group
+  filter and group-wise totals. *Download letters in one go* can pick one group, and the ZIP puts each group's
+  certificates in a folder named after the group (e.g. `Distributors\BC_200003_….pdf`).
 - **Letterhead & signature** (step 3): upload the company logo and, optionally, the authorised signatory's signature.
 - **Email check** (step 2): missing or invalid emails / CCs are flagged red and not sent; likely typos (e.g. `gmial.com`)
   are flagged amber. *Download the list* gives an Excel of problems to get corrected.
