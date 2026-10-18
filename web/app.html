@@ -186,6 +186,8 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
       <div class="chips" id="filters"></div>
       <div class="row">
         <select id="groupSel" class="hidden" style="width:auto" title="Customer group"></select>
+        <select id="reconFilter" class="hidden" style="width:auto;max-width:320px" title="Recon. Acc"></select>
+        <button class="btn" id="tickShown" type="button" title="Tick the rows shown (with a valid email) and untick all others">✔ Tick only these</button>
         <input type="search" id="search" placeholder="Search code / name / email" style="width:240px">
         <button class="btn" id="dlMaster" type="button" data-t="⬇ {P} master template"></button>
         <button class="btn" id="dlBal" type="button">⬇ Balances (Excel)</button>
@@ -194,7 +196,7 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
     <div class="tablewrap"><table>
       <thead><tr>
         <th><input type="checkbox" id="checkAll" title="Tick / untick all rows shown"></th>
-        <th>Code</th><th data-t="{P}"></th><th id="thGroup" class="hidden">Group</th><th id="thA"></th><th id="thB"></th><th>Net</th><th>Email</th><th>CC</th>
+        <th>Code</th><th data-t="{P}"></th><th id="thGroup" class="hidden">Group</th><th id="thRecon" class="hidden">Recon. Acc</th><th id="thA"></th><th id="thB"></th><th>Net</th><th>Email</th><th>CC</th>
       </tr></thead>
       <tbody id="tbody"></tbody>
     </table></div>
@@ -604,13 +606,18 @@ async function readMaster(file) {
 // ------------------------------------------------------------------ balances
 function buildRows() {
   const map = new Map();
-  const get = code => { if (!map.has(code)) map.set(code, {code, nameA: "", nameB: "", a: 0, b: 0, age: null, group: ""}); return map.get(code); };
-  const addAge = (v, r) => { if (!r.age) return; v.age = v.age || r.age.map(() => 0); r.age.forEach((x, i) => { v.age[i] += x; }); };
-  for (const r of dumpA) { const v = get(r.code); v.a += r.amt; addAge(v, r); if (!v.nameA) v.nameA = r.name; if (!v.group) v.group = r.group || ""; }
-  for (const r of dumpB || []) { const v = get(r.code); v.b += r.amt; addAge(v, r); if (!v.nameB) v.nameB = r.name; if (!v.group) v.group = r.group || ""; }
+  const get = code => { if (!map.has(code)) map.set(code, {code, nameA: "", nameB: "", a: 0, b: 0, age: null, group: "", rc: {}}); return map.get(code); };
+  const add = (v, r) => {
+    if (r.age) { v.age = v.age || r.age.map(() => 0); r.age.forEach((x, i) => { v.age[i] += x; }); }
+    if (!v.group) v.group = r.group || "";
+    if (r.recon) v.rc[r.recon] = (v.rc[r.recon] || 0) + Math.abs(r.amt);   // ageing report: which accounts make up the balance
+  };
+  for (const r of dumpA) { const v = get(r.code); v.a += r.amt; add(v, r); if (!v.nameA) v.nameA = r.name; }
+  for (const r of dumpB || []) { const v = get(r.code); v.b += r.amt; add(v, r); if (!v.nameB) v.nameB = r.name; }
   rows = [...map.values()].map(v => {
     const a = round2(v.a), b = round2(v.b), net = round2(a + b);
-    return {code: v.code, name: v.nameB || v.nameA, group: v.group, a, b, net, age: v.age && v.age.map(round2), email: "", cc: "", send: false};
+    const recons = Object.keys(v.rc).sort((x, y) => v.rc[y] - v.rc[x]);   // largest first
+    return {code: v.code, name: v.nameB || v.nameA, group: v.group, recons, a, b, net, age: v.age && v.age.map(round2), email: "", cc: "", send: false};
   }).sort((a, b) => a.code.localeCompare(b.code, undefined, {numeric: true}));
   applyMaster(); resetSend();
 }
@@ -649,9 +656,10 @@ function groupList(list = rows) {
   for (const r of list) { const g = groupOf(r), s = m.get(g) || {n: 0, net: 0}; s.n++; s.net += r.net; m.set(g, s); }
   return [...m.entries()].sort((a, b) => (a[0] === NO_GROUP) - (b[0] === NO_GROUP) || a[0].localeCompare(b[0]));
 }
+const hasRecons = () => rows.some(r => r.recons && r.recons.length);
 function viewRows() {
-  const q = $("#search").value.trim().toLowerCase(), g = $("#groupSel").value;
-  return rows.filter(FILTERS[filter]).filter(r => !g || groupOf(r) === g)
+  const q = $("#search").value.trim().toLowerCase(), g = $("#groupSel").value, rc = $("#reconFilter").value;
+  return rows.filter(FILTERS[filter]).filter(r => !g || groupOf(r) === g).filter(r => !rc || r.recons.includes(rc))
              .filter(r => !q || (r.code + " " + r.name + " " + r.group + " " + r.email + " " + r.cc).toLowerCase().includes(q));
 }
 // group filter in step 2, group choice in the download box, and the group-wise summary
@@ -670,6 +678,18 @@ function renderGroups() {
   opts($("#groupSel"), "All groups"); opts($("#dlGroup"), "All groups");
   $("#groupBox").innerHTML = `<div class="sect">By ${M().p} group</div><div class="agegrid">${groups.map(([g, s]) =>
     `<div>${esc(g)} · ${s.n.toLocaleString("en-IN")}<b>${inr(s.net)} ${s.net < 0 ? "Cr" : s.net > 0 ? "Dr" : ""}</b></div>`).join("")}</div>`;
+}
+// Recon. Acc filter (vendor ageing report): a vendor matches every account that is part of its balance
+function renderReconFilter() {
+  const sel = $("#reconFilter"), on = hasRecons(), v = sel.value;
+  sel.classList.toggle("hidden", !on); $("#thRecon").classList.toggle("hidden", !on);
+  if (!on) { sel.value = ""; return; }
+  const n = new Map();
+  for (const r of rows) for (const a of r.recons) n.set(a, (n.get(a) || 0) + 1);
+  const accts = [...n.keys()].sort();
+  sel.innerHTML = `<option value="">All Recon. Acc (${rows.length.toLocaleString("en-IN")})</option>` +
+    accts.map(a => `<option value="${esc(a)}">${esc(a)} (${n.get(a).toLocaleString("en-IN")})</option>`).join("");
+  sel.value = accts.includes(v) ? v : "";
 }
 function renderFilters() {
   dupCache = null;
@@ -715,15 +735,17 @@ function emailCell(r, k) {
   return `<input type="text" data-k="${k}" value="${esc(v)}"${cls ? ` class="${cls}" title="${esc(tip)}"` : ""}>`;
 }
 function renderTable() {
-  const v = viewRows(), grp = hasGroups();
+  const v = viewRows(), grp = hasGroups(), rcOn = hasRecons();
+  const reconCell = r => !rcOn ? "" : `<td class="name"${r.recons.length > 1 ? ` title="${esc(r.recons.join("\n"))}"` : ""}>${esc(r.recons[0] || "")}${
+    r.recons.length > 1 ? ` <small class="note">+${r.recons.length - 1} more</small>` : ""}</td>`;
   $("#tbody").innerHTML = v.map(r => {
     const i = rows.indexOf(r);
     return `<tr data-i="${i}">
       <td><input type="checkbox" data-k="send"${r.send ? " checked" : ""}></td>
-      <td>${esc(r.code)}</td><td class="name">${esc(r.name)}</td>${grp ? `<td>${esc(r.group)}</td>` : ""}
+      <td>${esc(r.code)}</td><td class="name">${esc(r.name)}</td>${grp ? `<td>${esc(r.group)}</td>` : ""}${reconCell(r)}
       <td class="num">${signed(r.a)}</td><td class="num">${signed(r.b)}</td><td class="num">${drcr(r.net)}</td>
       <td>${emailCell(r, "email")}</td><td>${emailCell(r, "cc")}</td></tr>`;
-  }).join("") || `<tr><td colspan="${grp ? 9 : 8}" style="text-align:center;color:var(--muted);padding:20px">No ${M().ps} match.</td></tr>`;
+  }).join("") || `<tr><td colspan="${8 + grp + rcOn}" style="text-align:center;color:var(--muted);padding:20px">No ${M().ps} match.</td></tr>`;
   $("#checkAll").checked = v.length > 0 && v.every(r => r.send);
 }
 function renderSelection() {
@@ -742,7 +764,7 @@ function renderSelection() {
 }
 function renderAll() {
   ["#step2", "#step3", "#stepDl", "#step4"].forEach(s => $(s).classList.remove("hidden"));
-  renderMetrics(); renderAgeBox(); renderGroups(); renderFilters(); renderTable(); renderSelection();
+  renderMetrics(); renderAgeBox(); renderGroups(); renderReconFilter(); renderFilters(); renderTable(); renderSelection();
 }
 
 // ------------------------------------------------------------------ email values
@@ -1438,6 +1460,13 @@ $("#clearMaster").addEventListener("click", () => {
 $("#filters").addEventListener("click", e => { const f = e.target.closest("[data-f]"); if (!f) return; filter = f.dataset.f; renderFilters(); renderTable(); });
 $("#search").addEventListener("input", renderTable);
 $("#groupSel").addEventListener("change", renderTable);
+$("#reconFilter").addEventListener("change", renderTable);
+// selects exactly the rows currently shown (filter chips, group, Recon. Acc, search); bad emails stay unticked
+$("#tickShown").addEventListener("click", () => {
+  const shown = new Set(viewRows());
+  for (const r of rows) r.send = shown.has(r) && mailOk(r);
+  renderFilters(); renderTable(); renderSelection();
+});
 $("#dlGroup").addEventListener("change", renderScope);
 $("#checkAll").addEventListener("change", e => { viewRows().forEach(r => r.send = e.target.checked); renderFilters(); renderTable(); renderSelection(); });
 $("#tbody").addEventListener("change", e => {
@@ -1466,7 +1495,8 @@ $("#dlOne").addEventListener("click", () => {
 const groupCol = r => hasGroups() ? {[M().P + " Group"]: r.group} : {};
 $("#dlMaster").addEventListener("click", () => writeXlsx(rows.map(r => ({[M().P + " Code"]: r.code, [M().P + " Name"]: r.name, ...groupCol(r), "Email": r.email, "CC": r.cc})), `${M().p}_master.xlsx`));
 $("#dlBal").addEventListener("click", () => writeXlsx(rows.map(r => ({
-  [M().P + " Code"]: r.code, [M().P + " Name"]: r.name, ...groupCol(r), [M().a.col]: r.a, [M().b.col]: r.b, "Net": r.net,
+  [M().P + " Code"]: r.code, [M().P + " Name"]: r.name, ...groupCol(r),
+  ...(r.recons && r.recons.length ? {"Recon. Acc": r.recons.join("; ")} : {}), [M().a.col]: r.a, [M().b.col]: r.b, "Net": r.net,
   "Nature": r.net > 0 ? M().drLong : r.net < 0 ? M().crLong : "Nil", "Email": r.email, "CC": r.cc,
   "Email check": (emailIssue(r) || {}).text || "OK", "Send": r.send ? "Yes" : "",
   ...(r.age && ageing ? Object.fromEntries(ageing.buckets.map((l, i) => [l, r.age[i]])) : {})
