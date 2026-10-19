@@ -21,8 +21,8 @@ Copy **`index.html`** and **`Outlook_Connector.bat`** into one folder on any Win
   must sit next to `index.html` in the repository.
 - **Vendors / Customers** switch (top right): customers use the debtor open-items dump (customer advances in a
   separate dump are optional) and their own customer master. Dr = receivable by us, Cr = payable by us in both.
-- **Vendor Ageing Report** (step 1, vendors): upload this one SAP file instead of the two dumps. Tick which
-  reconciliation accounts to include (default: Advance-Vendors + all Sundry Creditors). Ageing buckets appear in
+- **Vendor Ageing Report** (step 1, vendors): upload this one SAP file instead of the two dumps. All
+  accounts are loaded; only Advance-Vendors and Sundry Creditors vendors are ticked automatically. Ageing buckets appear in
   step 2, in the preview and in the Balances Excel. Step 2 then also has a **Recon. Acc** column and filter;
   **✔ Tick only these** selects exactly the vendors shown (e.g. only Packing Material suppliers).
 - **Saved uploads**: uploaded SAP data is kept in the browser (IndexedDB) and reloaded when the app opens; upload

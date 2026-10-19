@@ -84,9 +84,6 @@ tr.overdue td { background: var(--warn-soft); }
 .seg button.on { background: var(--accent); color: #fff; }
 .imgprev { max-height: 60px; max-width: 220px; object-fit: contain; background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 4px; align-self: flex-start; }
 .st-warn { color: var(--warn); font-weight: 600; }
-.recon { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 4px 16px; margin-top: 8px; font-size: 13px; }
-.recon label { display: flex; gap: 8px; align-items: baseline; }
-.recon small { color: var(--muted); margin-left: auto; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .agegrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; margin-bottom: 12px; }
 .agegrid div { border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font-size: 12px; color: var(--muted); }
 .agegrid b { display: block; color: var(--text); font-size: 13.5px; font-variant-numeric: tabular-nums; }
@@ -162,10 +159,9 @@ code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; fon
         <button class="btn link hidden" id="clearMaster" type="button" data-t="Forget remembered {p} master"></button></div>
     </div>
     <div class="drop" id="dropAg" style="margin-top:14px"><label class="f">…or upload the Vendor Ageing Report instead (SAP, one file)
-        <small>Replaces the two dumps above: advances and creditors come from one file, with ageing. Choose which reconciliation accounts to include after uploading.</small></label>
+        <small>Replaces the two dumps above: advances and creditors come from one file, with ageing. Use the Recon. Acc filter in step 2 to pick vendors by account.</small></label>
       <input type="file" id="fileAg" accept=".xlsx,.xls"><span class="name"></span>
       <button class="btn link hidden rm" type="button" data-rm="ag">✕ Remove this file</button></div>
-    <div id="reconBox" class="hidden"></div>
     <div class="grid g4" style="margin-top:14px">
       <label class="f">Balance as at<input type="date" id="asAt"></label>
       <label class="f">Letter date<input type="date" id="letterDate"></label>
@@ -926,7 +922,6 @@ let rows = [];                          // one per party
 let filter = "All";
 let images = lsGet(LS_IMAGES) || {};    // {logo, sign: data URLs, lh: letterhead on/off}
 let ageing = null;                      // vendor ageing report lines, when used instead of the two dumps
-let reconSel = (lsGet(LS_PREFS) || {}).recon || null;   // ticked reconciliation accounts (null = default)
 
 // ------------------------------------------------------------------ reading Excel
 async function readRows(file) {
@@ -980,43 +975,16 @@ async function readAgeing(file) {
   lines.cols = `Vendor code = “${code}”, name = “${name}”, amount = “${amt}”, account = “${recon}”, ${buckets.length} ageing buckets`;
   return lines;
 }
-// default = what the two dumps cover: Advance to Vendor + all Sundry Creditors accounts
+// trade accounts (what the two dumps cover): only these vendors are ticked automatically;
+// loans, deposits and employee advances are loaded too and can be picked with the Recon. Acc filter
 const reconDefault = a => /^advance[\s-]*vendors?$/i.test(a) || /^sundry creditors/i.test(a);
 const reconSide = a => /advance|deposit/i.test(a) ? "a" : "b";   // advances & deposits are debit-side items
-function reconSet() {
-  const all = [...new Set(ageing.map(l => l.recon))];
-  return new Set(reconSel ? all.filter(a => reconSel.includes(a)) : all.filter(reconDefault));
-}
 function applyAgeing() {
-  const sel = reconSet();
-  const pick = side => ageing.filter(l => sel.has(l.recon) && reconSide(l.recon) === side);
+  const pick = side => ageing.filter(l => reconSide(l.recon) === side);
   dumpA = pick("a"); dumpB = pick("b");
   dumpA.cols = dumpB.cols = ageing.cols;
-  buildRows(); renderAll(); renderReconBox();
+  buildRows(); renderAll();
 }
-function renderReconBox() {
-  const box = $("#reconBox");
-  if (!ageing) { box.classList.add("hidden"); box.innerHTML = ""; return; }
-  const sel = reconSet(), stats = new Map();
-  for (const l of ageing) { const s = stats.get(l.recon) || {n: 0, t: 0}; s.n++; s.t += l.amt; stats.set(l.recon, s); }
-  const list = [...stats.entries()].sort((x, y) => (reconDefault(y[0]) - reconDefault(x[0])) || x[0].localeCompare(y[0]));
-  box.innerHTML = `<details open style="margin-top:12px"><summary>Accounts included from the ageing report (${sel.size} of ${stats.size})</summary>
-    <div class="row" style="margin-top:8px"><button class="btn link" type="button" data-rs="default">Default (Advance to Vendor + Sundry Creditors)</button>
-      <button class="btn link" type="button" data-rs="all">All</button><button class="btn link" type="button" data-rs="none">None</button></div>
-    <div class="recon">${list.map(([a, s]) => `<label><input type="checkbox" data-recon="${esc(a)}"${sel.has(a) ? " checked" : ""}>
-      <span>${esc(a)}</span><small>${s.n.toLocaleString("en-IN")} · ${inr(s.t)} ${s.t < 0 ? "Cr" : s.t > 0 ? "Dr" : ""}</small></label>`).join("")}</div></details>`;
-  box.classList.remove("hidden");
-}
-$("#reconBox").addEventListener("change", e => {
-  const a = e.target.dataset.recon; if (a == null) return;
-  const sel = reconSet(); e.target.checked ? sel.add(a) : sel.delete(a);
-  reconSel = [...sel]; savePrefs(); applyAgeing();
-});
-$("#reconBox").addEventListener("click", e => {
-  const k = e.target.dataset.rs; if (!k) return;
-  reconSel = k === "default" ? null : k === "all" ? [...new Set(ageing.map(l => l.recon))] : [];
-  savePrefs(); applyAgeing();
-});
 function renderAgeBox() {
   const box = $("#ageBox"), labels = ageing && ageing.buckets;
   if (!labels || !rows.length) { box.classList.add("hidden"); return; }
@@ -1066,7 +1034,10 @@ function applyMaster() {
   for (const r of rows) { const m = master[r.code]; if (m) { r.email = m.email; r.cc = m.cc; } }
 }
 function minBal() { return Math.max(parseFloat($("#minBal").value) || 0, 0.01); }
-function resetSend() { const mb = minBal(); for (const r of rows) r.send = mailOk(r) && Math.abs(r.net) >= mb; }
+function resetSend() {
+  const mb = minBal();
+  for (const r of rows) r.send = mailOk(r) && Math.abs(r.net) >= mb && (!r.recons.length || r.recons.some(reconDefault));
+}
 const selectedRows = () => rows.filter(r => r.send && mailOk(r));
 
 // ------------------------------------------------------------------ render: step 2
@@ -1809,7 +1780,7 @@ function clearUploads() {
   dumpA = dumpB = ageing = null; rows = [];
   ["#fileA", "#fileB", "#fileAg"].forEach(id => $(id).value = "");
   ["#dropA", "#dropB", "#dropAg"].forEach(id => markDrop(id, null));
-  renderReconBox(); $("#ageBox").classList.add("hidden");
+  $("#ageBox").classList.add("hidden");
 }
 async function onDump(which, input, dropId) {
   const f = input.files[0]; markDrop(dropId, null); if (!f) return;
@@ -1817,7 +1788,7 @@ async function onDump(which, input, dropId) {
     showMsg("Reading " + esc(f.name) + "…", "info"); await tick();
     const data = await readDump(f);
     if (ageing) {   // switching back from the ageing report to the two dumps
-      ageing = null; renderReconBox(); markDrop("#dropAg", null); $("#fileAg").value = "";
+      ageing = null; markDrop("#dropAg", null); $("#fileAg").value = "";
       if (which === "a") dumpB = null; else dumpA = null;
       rows = []; $("#ageBox").classList.add("hidden");
       ["#step2", "#step3", "#stepDl"].forEach(s => $(s).classList.add("hidden"));
@@ -1842,7 +1813,7 @@ async function removeUpload(which) {
     delete rec[which];
     await idbDo(s => (rec.a || rec.b || rec.ag) ? s.put(rec, mode) : s.delete(mode));
   } catch (e) {}
-  if (which === "ag") { ageing = null; dumpA = dumpB = null; renderReconBox(); }
+  if (which === "ag") { ageing = null; dumpA = dumpB = null; }
   else if (which === "a") dumpA = null; else dumpB = null;
   const id = {a: "#dropA", b: "#dropB", ag: "#dropAg"}[which];
   $({a: "#fileA", b: "#fileB", ag: "#fileAg"}[which]).value = ""; markDrop(id, null);
@@ -1861,7 +1832,7 @@ $("#fileAg").addEventListener("change", async e => {
     clearUploads(); ageing = data; markDrop("#dropAg", f); renderSavedNote(null);
     saveDump("ag", data, f.name);
     applyAgeing();
-    showMsg(`${data.length.toLocaleString("en-IN")} lines read – ${esc(data.cols)}. Check the accounts included below.`, "info");
+    showMsg(`${data.length.toLocaleString("en-IN")} lines read – ${esc(data.cols)}. Vendors in Advance-Vendors and Sundry Creditors accounts are ticked; use the Recon. Acc filter in step 2 for others.`, "info");
   } catch (err) { showMsg(esc(err.message)); }
 });
 
@@ -2218,7 +2189,7 @@ $("#trkRestore").addEventListener("change", async e => {
 
 function savePrefs() {
   lsSet(LS_PREFS, {asAt: $("#asAt").value, fromAcc: $("#fromAcc").value, action: $("#action").value, delay: $("#delay").value,
-                   mode, remDays: $("#remDays").value, recon: reconSel});
+                   mode, remDays: $("#remDays").value});
 }
 
 // ------------------------------------------------------------------ init
