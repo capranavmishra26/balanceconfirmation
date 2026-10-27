@@ -459,7 +459,8 @@ function emailIssue(r) {
 }
 const mailOk = r => { const i = emailIssue(r); return !i || i.level !== "bad"; };
 const safeName = s => (String(s).replace(/[^A-Za-z0-9._ -]+/g, "").trim().slice(0, 60) || "letter");
-const letterName = r => `BC_${r.code}_${safeName(r.name)}.pdf`;
+// customer certificates are saved by customer code only (e.g. 200003.pdf); vendor letters keep code + name
+const letterName = r => (r.mode || mode) === "customer" ? `${safeName(r.code)}.pdf` : `BC_${r.code}_${safeName(r.name)}.pdf`;
 function fill(tpl, vals) { return tpl.replace(/\{(\w+)\}/g, (m, k) => (k in vals ? vals[k] : m)); }
 function download(blob, name) {
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
@@ -1461,7 +1462,7 @@ $("#minBal").addEventListener("change", () => { if (!rows.length) return; resetS
 $("#confirm").addEventListener("change", renderSelection);
 $("#pick").addEventListener("change", renderPreview);
 $("#dlOne").addEventListener("click", () => {
-  const r = pickedRow(); if (r) makeLetter(r).save(`BC_${r.code}_${safeName(r.name)}.pdf`);
+  const r = pickedRow(); if (r) makeLetter(r).save(letterName(r));
 });
 const groupCol = r => hasGroups() ? {[M().P + " Group"]: r.group} : {};
 $("#dlMaster").addEventListener("click", () => writeXlsx(rows.map(r => ({[M().P + " Code"]: r.code, [M().P + " Name"]: r.name, ...groupCol(r), "Email": r.email, "CC": r.cc})), `${M().p}_master.xlsx`));
